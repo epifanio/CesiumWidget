@@ -167,6 +167,24 @@ define(
                     this.kml = kml;
                 }
             }
+                update_geojson: function () {
+                console.log('Update geojson!');
+                // Add or update the geojson
+                var geojson_string = this.model.get('geojson_url');
+                if (!$.isEmptyObject(geojson_string)) {
+                    //var data = $.parseJSON(kml_string);
+                    var geojson = new Cesium.GeoJsonDataSource();
+
+                    geojson.load(geojson_string, 'Python geojson');
+                    if (!$.isEmptyObject(this.geojson)) {
+                        this.viewer.dataSources.remove(this.geojson,true);
+                    }
+                    console.log(geojson);
+                    
+                    this.viewer.dataSources.add(geojson);
+                    this.geojson = geojson;
+                }
+            }
         });
 
         return { CesiumView: CesiumView }
