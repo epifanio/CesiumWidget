@@ -246,12 +246,26 @@ define(
 					this.touch();
 				}
 				console.log(region);
+            },
+            groundoverlay: function () {
+            	console.log('add ground overlay');
+            		var latitude = 40.0;
+			var longitude = -100.0;
+			var north = latitude + .35;
+			var south = latitude - .35;
+			var east = longitude + 1.55;
+			var west = longitude - 1.55;
+			var rectangle = Cesium.Rectangle.fromDegrees(west, south, east, north);
+
+			var entity = viewer.entities.add({
+    				rectangle: {
+        				coordinates: rectangle,
+        				material: './static/Cesium_Logo_Color.jpg'
+    					}
+				});
             }
             
         });
-
-
-
 
         return { CesiumView: CesiumView }
     });
