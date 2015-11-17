@@ -16,7 +16,9 @@ class CesiumWidget(DOMWidget):
     #zoomto = Unicode(sync=True)
     _zoomto = List(sync=True, trait=Float, allow_none=True)
     _flyto = List(sync=True, trait=Float, allow_none=True)
-    
+    _zoomtoregion = List(sync=True, trait=Float, allow_none=True)
+    _groundoverlay = List(sync=True, allow_none=True)
+
     animation = Bool(True, sync=True)
     base_layer_picker = Bool(True, sync=True)
     geocoder = Bool(True, sync=True)
@@ -34,6 +36,12 @@ class CesiumWidget(DOMWidget):
 
     def zoom_to(self, lon, lat, alt, heading=0, pitch=-90, roll=0):
         self._zoomto = [lon, lat, alt, heading, pitch, roll]
-
+        
     def fly_to(self, lon, lat, alt, heading=0, pitch=-90, roll=0):
         self._flyto = [lon, lat, alt, heading, pitch, roll]
+
+    def zoom_to_region(self, west, south, east, north):
+        self._zoomtoregion = [west, south, east, north]
+        
+    def groundoverlay(self, west, south, east, north, image):
+        self._groundoverlay = [west, south, east, north, image]
