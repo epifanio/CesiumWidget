@@ -28,3 +28,5 @@ Roadmap still to be written but visioned features are:
 Screenshot
 ----------
 ![Screenshot](screenshot.jpg)
+
+![demo](http://epinux.com/cesiumwidget.mp4)
