@@ -32,7 +32,7 @@ setup(
     packages=['CesiumWidget'],  # find_packages(exclude=('tests', 'docs')),
     install_requires=["jupyter-pip"],
     # user=False on cmdclass installs in distribution IPython, without installs in user/.ipython
-    cmdclass=cmdclass('CesiumWidget', user=False),
+    cmdclass=cmdclass('CesiumWidget', user=True),
     include_package_data=True,
     license="Apache",
     zip_safe=False,
