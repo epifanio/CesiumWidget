@@ -12,7 +12,7 @@ CesiumWidget part of code is under Apache license
 
 Features
 --------
-The widget is in development and has currently basic features such as CZML and KML.
+The widget is in development and has currently basic features such as CZML, GeoJson and KML.
 
 The vision is to have a widget for representing orbits, 
 geo-related informations in an efficient way directly in the browser. By using the full
@@ -22,7 +22,8 @@ Roadmap still to be written but visioned features are:
 * Time readout and control of widget from python
 * Better interface with czml
 * Pyplot-like interface to quickly plot stuff
-* GeoJSON mapping
+* Full Camera control from Python
+* Add/Remove base-layer (grondoverlay and wms)
 
 
 Screenshot
