@@ -122,6 +122,8 @@ define(
                 this.model.on('change:kml', this.update_kml, this);
                 this.update_geojson();
                 this.model.on('change:geojson', this.update_geojson, this);
+                this.update_groundoverlay();
+                this.model.on('change:geojson', this.update_groundoverlay, this);
 
 
                 this.fly_to();
@@ -130,6 +132,7 @@ define(
                 this.model.on('change:_zoomto', this.zoom_to, this);
                 this.zoom_to_region();
                 this.model.on('change:_zoomtoregion', this.zoom_to_region, this);
+
                 // call __super__.update to handle housekeeping
                 //return CesiumView.__super__.update.apply(this, arguments);
             },
@@ -239,7 +242,7 @@ define(
 				// move the camera to a location
 				var region = this.model.get('_zoomtoregion');
 				if (!$.isEmptyObject(region)) {
-					var pos = region // .split(",");
+					var pos = region; // .split(",");
 					var rectangle = Cesium.Rectangle.fromDegrees(Number(pos[0]), Number(pos[1]), Number(pos[2]), Number(pos[3]));
 					this.viewer.camera.viewRectangle(rectangle);
 					this.model.set('_zoomtoregion', null);
@@ -247,22 +250,30 @@ define(
 				}
 				console.log(region);
             },
-            groundoverlay: function () {
-            	console.log('add ground overlay');
-            		var latitude = 40.0;
-			var longitude = -100.0;
-			var north = latitude + .35;
-			var south = latitude - .35;
-			var east = longitude + 1.55;
-			var west = longitude - 1.55;
-			var rectangle = Cesium.Rectangle.fromDegrees(west, south, east, north);
 
-			var entity = viewer.entities.add({
+            update_groundoverlay: function () {
+            	console.log('add ground overlay');
+                var groundoverlay = this.model.get('_groundoverlay');
+                if (!$.isEmptyObject(region)) {
+                    var pos = groundoverlay;
+                    var latitude = 40.0;
+			        var longitude = -100.0;
+			        var north = latitude + .35;
+			        var south = latitude - .35;
+			        var east = longitude + 1.55;
+			        var west = longitude - 1.55;
+			        var rectangle = Cesium.Rectangle.fromDegrees(west, south, east, north);
+                    this.viewer.camera.viewRectangle(rectangle);
+					this.model.set('_groundoverlay', null);
+					this.touch();
+				}
+
+			    var entity = viewer.entities.add({
     				rectangle: {
         				coordinates: rectangle,
-        				material: './static/Cesium_Logo_Color.jpg'
+        				material: groundoverlay[0]
     					}
-				});
+				    });
             }
             
         });
