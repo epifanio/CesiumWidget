@@ -57,9 +57,9 @@ if "all" in sys.argv:
     recursive_overwrite(src='./CesiumWidget/', dest=destdir)
     sys.argv.remove("all")
 
-if "user" in sys.argv:
+if "local" in sys.argv:
     home = expanduser("~")
-    destdir=os.path.join(home,'.local/share/jupyter ','nbextensions','CesiumWidget')
+    destdir=os.path.join(home,'.local/share/jupyter','nbextensions','CesiumWidget')
     print("The CesiumWidget will be in the user directory %s " % destdir)
     recursive_overwrite(src='./CesiumWidget/', dest=destdir)
     sys.argv.remove("user")
