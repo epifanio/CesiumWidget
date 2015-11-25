@@ -16,6 +16,8 @@ import subprocess
 from jupyter_core.paths import jupyter_config_dir
 import shutil
 
+from os.path import expanduser
+
 if sys.version_info[:2] < (2, 6) or (3, 0) <= sys.version_info[0:2] < (3, 2):
     raise RuntimeError("Python version 2.6, 2.7 or >= 3.2 required.")
 
@@ -56,7 +58,8 @@ if "all" in sys.argv:
     sys.argv.remove("all")
 
 if "user" in sys.argv:
-    destdir=os.path.join(jupyter_config_dir(),'nbextensions','CesiumWidget')
+    home = expanduser("~")
+    destdir=os.path.join(home,'.local/share/jupyter/ ','nbextensions','CesiumWidget')
     print("The CesiumWidget will be in the user directory %s " % destdir)
     recursive_overwrite(src='./CesiumWidget/', dest=destdir)
     sys.argv.remove("user")
