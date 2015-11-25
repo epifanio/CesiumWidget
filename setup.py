@@ -13,7 +13,7 @@ from distutils.core import setup
 import os
 import sys
 import subprocess
-from jupyter_core.paths import jupyter_config_dir
+from jupyter_core.paths import jupyter_config_dir, jupyter_data_dir
 import shutil
 
 from os.path import expanduser
@@ -57,9 +57,9 @@ if "all" in sys.argv:
     recursive_overwrite(src='./CesiumWidget/', dest=destdir)
     sys.argv.remove("all")
 
-if "local" in sys.argv:
+if "user" in sys.argv:
     home = expanduser("~")
-    destdir=os.path.join(home,'.local/share/jupyter','nbextensions','CesiumWidget')
+    destdir=os.path.join(jupyter_data_dir(),'nbextensions','CesiumWidget')
     print("The CesiumWidget will be in the user directory %s " % destdir)
     recursive_overwrite(src='./CesiumWidget/', dest=destdir)
     sys.argv.remove("user")
