@@ -6,6 +6,8 @@ USER main
 
 RUN /home/main/anaconda/envs/python3/bin/pip install --upgrade pip
 
+RUN /home/main/anaconda/envs/python3/bin/pip install -U jupyter
+
 RUN /home/main/anaconda/envs/python3/bin/pip install czml
 RUN git clone https://github.com/epifanio/CesiumWidget /tmp/CesiumWidget
 RUN cd /tmp/CesiumWidget
