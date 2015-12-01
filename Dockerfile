@@ -18,7 +18,7 @@ RUN /tmp/install_cesiumwidget.sh
 USER root
 RUN mkdir $HOME/Examples/
 ADD Examples/ $HOME/Examples/
-RUN chown -R main:main $HOME/notebooks
+RUN chown -R main:main $HOME/Examples
 USER main
 
 WORKDIR $HOME/Examples
