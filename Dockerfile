@@ -18,6 +18,7 @@ RUN /tmp/install_cesiumwidget.sh
 COPY Examples /home/main/notebooks/Examples
 
 USER root
+RUN cp -R /tmp/CesiumWidget/Examples /home/main/notebooks/Examples
 RUN chown -R main:main $HOME/notebooks
 USER main
 
