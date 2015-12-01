@@ -11,7 +11,9 @@ RUN git clone https://github.com/epifanio/CesiumWidget /tmp/CesiumWidget
 RUN cd /tmp/CesiumWidget
 COPY Examples /home/main/notebooks/Examples
 
-RUN /home/main/anaconda/envs/python3/bin/python3 setup.py install user
+RUN ls /home/main/anaconda/envs/python3/bin/
+
+RUN /home/main/anaconda/envs/python3/bin/python setup.py install user
 
 ADD . $HOME/notebooks
 
