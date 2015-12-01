@@ -8,16 +8,14 @@ RUN /home/main/anaconda/envs/python3/bin/pip install --upgrade pip
 
 RUN /home/main/anaconda/envs/python3/bin/pip install -U jupyter
 
-RUN /home/main/anaconda/envs/python3/bin/pip install czml
-RUN git clone https://github.com/epifanio/CesiumWidget /tmp/CesiumWidget
-RUN cd /tmp/CesiumWidget
-COPY Examples /home/main/notebooks/Examples
-
-RUN ls /tmp/CesiumWidget/
-
-RUN /home/main/anaconda/envs/python3/bin/python /tmp/CesiumWidget/setup.py install user
-
 ADD . $HOME/notebooks
+
+RUN /home/main/anaconda/envs/python3/bin/pip install czml
+
+ADD install_cesiumwidget.sh /tmp/install_cesiumwidget.sh
+RUN /tmp/install_cesiumwidget.sh
+
+COPY Examples /home/main/notebooks/Examples
 
 USER root
 RUN chown -R main:main $HOME/notebooks
