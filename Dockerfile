@@ -12,19 +12,14 @@ ADD . $HOME/notebooks
 
 RUN /home/main/anaconda/envs/python3/bin/pip install czml
 
+RUN /home/main/anaconda/envs/python3/bin/pip install geocoder
+
 ADD install_cesiumwidget.sh /tmp/install_cesiumwidget.sh
 RUN /tmp/install_cesiumwidget.sh
 
-COPY Examples /home/main/notebooks/Examples
-
 USER root
-RUN cp -R /tmp/CesiumWidget/Examples /home/main/notebooks/Examples
+RUN cp -R /tmp/CesiumWidget/Examples $HOME/notebooks/Examples
 RUN chown -R main:main $HOME/notebooks
 USER main
 
-# Convert notebooks to the current format
-# RUN find $HOME/notebooks -name '*.ipynb' -exec ipython nbconvert --to notebook {} --output {} \;
-RUN find $HOME/notebooks -name '*.ipynb' -exec ipython trust {} \;
-
-
-WORKDIR $HOME/notebooks
+WORKDIR $HOME/notebooks/Examples
