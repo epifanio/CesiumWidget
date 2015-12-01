@@ -8,8 +8,6 @@ RUN /home/main/anaconda/envs/python3/bin/pip install --upgrade pip
 
 RUN /home/main/anaconda/envs/python3/bin/pip install -U jupyter
 
-ADD Examples $HOME/Examples/
-
 RUN /home/main/anaconda/envs/python3/bin/pip install czml
 
 RUN /home/main/anaconda/envs/python3/bin/pip install geocoder
@@ -18,6 +16,8 @@ ADD install_cesiumwidget.sh /tmp/install_cesiumwidget.sh
 RUN /tmp/install_cesiumwidget.sh
 
 USER root
+RUN mkdir $HOME/Examples/
+ADD Examples/ $HOME/Examples/
 RUN chown -R main:main $HOME/notebooks
 USER main
 
