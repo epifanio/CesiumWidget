@@ -8,6 +8,8 @@ RUN /home/main/anaconda/envs/python3/bin/pip install --upgrade pip
 
 RUN /home/main/anaconda/envs/python3/bin/pip install -U jupyter
 
+ADD Examples $HOME/Examples/
+
 RUN /home/main/anaconda/envs/python3/bin/pip install czml
 
 RUN /home/main/anaconda/envs/python3/bin/pip install geocoder
@@ -19,4 +21,4 @@ USER root
 RUN chown -R main:main $HOME/notebooks
 USER main
 
-WORKDIR $HOME/notebooks/Examples
+WORKDIR $HOME/Examples
