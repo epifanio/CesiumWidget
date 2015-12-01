@@ -1,4 +1,5 @@
-FROM gcr.io/generic-notebooks/binder-base
+FROM andrewosh/binder-base
+
 MAINTAINER Massimo Di Stefano <epiesasha@me.com>
 
 USER main
