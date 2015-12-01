@@ -1,5 +1,9 @@
 ===============================
 [![Join the chat at https://gitter.im/epifanio/CesiumWidget](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/epifanio/CesiumWidget?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+
+[![Binder](http://mybinder.org/badge.svg)](http://mybinder.org/repo/epifanio/CesiumWidget)
+
 CesiumWidget
 ===============================
 
@@ -30,4 +34,5 @@ Screenshot
 ----------
 ![Screenshot](screenshot.jpg)
 
-[demo](http://epinux.com/cesiumwidget.mp4)
+[video demo](http://epinux.com/cesiumwidget.mp4)
+
