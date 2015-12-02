@@ -7,19 +7,32 @@
  * @license Apache
  */
 
-var cesium_root = IPython.notebook.base_url + 'nbextensions/CesiumWidget/cesium/Source';
-var cesium_path = cesium_root + '/Cesium';
+//var cesium_root = IPython.notebook.base_url + 'nbextensions/CesiumWidget/cesium/Source';
+//var cesium_path = cesium_root + '/Cesium';
+
+//require.config({
+//    baseUrl: cesium_root,
+//    urlArgs: "",
+//    waitSeconds: 60,
+//    paths: {
+//        cesium: cesium_path
+//    },
+//    shim: {
+//        cesium: {
+//            exports: 'cesium'
+//        },
+//    }
+//});
 
 require.config({
-    baseUrl: cesium_root,
-    urlArgs: "",
-    waitSeconds: 60,
-    paths: {
-        cesium: cesium_path
+    map: {
+        "*": {
+            cesium: "nbextensions/CesiumWidget/cesium/Source/Cesium"
+        }
     },
     shim: {
-        cesium: {
-            exports: 'cesium'
+        "nbextensions/CesiumWidget/cesium/Source/Cesium": {
+            exports: "cesium"
         },
     }
 });
