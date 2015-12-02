@@ -12,10 +12,11 @@ RUN /home/main/anaconda/envs/python3/bin/pip install czml
 
 RUN /home/main/anaconda/envs/python3/bin/pip install geocoder
 
+USER root
+
 ADD install_cesiumwidget.sh /tmp/install_cesiumwidget.sh
 RUN /tmp/install_cesiumwidget.sh
 
-USER root
 RUN mkdir $HOME/Examples/
 ADD Examples/ $HOME/Examples/
 RUN chown -R main:main $HOME/Examples
