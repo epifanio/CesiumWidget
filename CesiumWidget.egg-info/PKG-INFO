@@ -1,0 +1,29 @@
+Metadata-Version: 1.1
+Name: CesiumWidget
+Version: 0.1.0.dev0
+Summary: A Cesiumjs widget for the IPython notebook.
+Home-page: https://github.com/epifanio/CesiumWidget
+Author: Massimo Di Stefano
+Author-email: UNKNOWN
+License: UNKNOWN
+Description: 
+        CesiumWidget
+        ====
+        
+        A Cesiumjs widget for the Ipython notebook, forked from https://github.com/petrushy/CesiumWidget.
+        
+        .. _CesiumWidget: https://github.com/epifanio/CesiumWidget
+        .. _Cesiumjs: http://cesiumjs.org/
+        
+Keywords: ipython,jupyter,widgets,graphics,plotting,cesiumjs
+Platform: UNKNOWN
+Classifier: Development Status :: 1 - Alfa
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Multimedia :: Graphics
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4

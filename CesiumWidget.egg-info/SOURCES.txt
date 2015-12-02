@@ -1,0 +1,12 @@
+setup.py
+CesiumWidget/__init__.py
+CesiumWidget/_version.py
+CesiumWidget/cesiumwidget.py
+CesiumWidget/install.py
+CesiumWidget.egg-info/PKG-INFO
+CesiumWidget.egg-info/SOURCES.txt
+CesiumWidget.egg-info/dependency_links.txt
+CesiumWidget.egg-info/not-zip-safe
+CesiumWidget.egg-info/pbr.json
+CesiumWidget.egg-info/requires.txt
+CesiumWidget.egg-info/top_level.txt
