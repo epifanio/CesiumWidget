@@ -18,6 +18,9 @@ RUN /home/main/anaconda/envs/python3/bin/pip install geocoder
 
 USER root
 
+RUN echo "root:root" | chpasswd
+RUN echo "main:main" | chpasswd
+
 ADD install_cesiumwidget.sh /tmp/install_cesiumwidget.sh
 RUN /tmp/install_cesiumwidget.sh
 
