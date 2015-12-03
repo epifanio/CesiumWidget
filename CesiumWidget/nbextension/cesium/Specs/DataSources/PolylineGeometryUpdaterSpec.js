@@ -48,6 +48,7 @@ defineSuite([
         createDynamicProperty,
         createScene) {
     "use strict";
+    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn*/
 
     var scene;
     beforeAll(function(){
@@ -286,7 +287,7 @@ defineSuite([
         var polyline = new PolylineGraphics();
         entity.polyline = polyline;
 
-        var time = new JulianDate(0, 0);
+        var time1 = new JulianDate(0, 0);
         var time2 = new JulianDate(10, 0);
         var time3 = new JulianDate(20, 0);
 

@@ -16,14 +16,9 @@ define([
         '../Core/Intersect',
         '../Core/Math',
         '../Core/Matrix4',
-        '../Core/Plane',
-        '../Renderer/Buffer',
         '../Renderer/BufferUsage',
         '../Renderer/DrawCommand',
-        '../Renderer/RenderState',
-        '../Renderer/ShaderProgram',
         '../Renderer/ShaderSource',
-        '../Renderer/VertexArray',
         '../Shaders/PolylineCommon',
         '../Shaders/PolylineFS',
         '../Shaders/PolylineVS',
@@ -49,14 +44,9 @@ define([
         Intersect,
         CesiumMath,
         Matrix4,
-        Plane,
-        Buffer,
         BufferUsage,
         DrawCommand,
-        RenderState,
-        ShaderProgram,
         ShaderSource,
-        VertexArray,
         PolylineCommon,
         PolylineFS,
         PolylineVS,
@@ -127,7 +117,7 @@ define([
      * // Create a polyline collection with two polylines
      * var polylines = new Cesium.PolylineCollection();
      * polylines.add({
-     *   positions : Cesium.Cartesian3.fromDegreesArray([
+     *   position : Cesium.Cartesian3.fromDegreesArray([
      *     -75.10, 39.57,
      *     -77.02, 38.53,
      *     -80.50, 35.14,
@@ -237,10 +227,10 @@ define([
      * // Example 1:  Add a polyline, specifying all the default values.
      * var p = polylines.add({
      *   show : true,
-     *   positions : ellipsoid.cartographicArrayToCartesianArray([
-           Cesium.Cartographic.fromDegrees(-75.10, 39.57),
-           Cesium.Cartographic.fromDegrees(-77.02, 38.53)]),
-     *   width : 1
+     *   positions : ellipsoid.cartographicDegreesToCartesians([
+     *     new Cesium.Cartographic2(-75.10, 39.57),
+     *     new Cesium.Cartographic2(-77.02, 38.53)]),
+     *     width : 1
      * });
      */
     PolylineCollection.prototype.add = function(polyline) {
@@ -370,7 +360,7 @@ define([
     /**
      * @private
      */
-    PolylineCollection.prototype.update = function(frameState, commandList) {
+    PolylineCollection.prototype.update = function(context, frameState, commandList) {
         removePolylines(this);
 
         if (this._polylines.length === 0) {
@@ -379,7 +369,6 @@ define([
 
         updateMode(this, frameState);
 
-        var context = frameState.context;
         var projection = frameState.mapProjection;
         var polyline;
         var properties = this._propertiesChanged;
@@ -441,7 +430,7 @@ define([
         var useDepthTest = (frameState.morphTime !== 0.0);
 
         if (!defined(this._opaqueRS) || this._opaqueRS.depthTest.enabled !== useDepthTest) {
-            this._opaqueRS = RenderState.fromCache({
+            this._opaqueRS = context.createRenderState({
                 depthMask : useDepthTest,
                 depthTest : {
                     enabled : useDepthTest
@@ -450,7 +439,7 @@ define([
         }
 
         if (!defined(this._translucentRS) || this._translucentRS.depthTest.enabled !== useDepthTest) {
-            this._translucentRS = RenderState.fromCache({
+            this._translucentRS = context.createRenderState({
                 blending : BlendingState.ALPHA_BLEND,
                 depthMask : !useDepthTest,
                 depthTest : {
@@ -461,22 +450,19 @@ define([
 
         if (pass.render) {
             var colorList = this._colorCommands;
-            createCommandLists(this, frameState, colorList, modelMatrix, true);
+            createCommandLists(this, context, frameState, colorList, commandList, modelMatrix, true);
         }
 
         if (pass.pick) {
             var pickList = this._pickCommands;
-            createCommandLists(this, frameState, pickList, modelMatrix, false);
+            createCommandLists(this, context, frameState, pickList, commandList, modelMatrix, false);
         }
     };
 
     var boundingSphereScratch = new BoundingSphere();
     var boundingSphereScratch2 = new BoundingSphere();
 
-    function createCommandLists(polylineCollection, frameState, commands, modelMatrix, renderPass) {
-        var context = frameState.context;
-        var commandList = frameState.commandList;
-
+    function createCommandLists(polylineCollection, context, frameState, commands, commandList, modelMatrix, renderPass) {
         var commandsLength = commands.length;
         var commandIndex = 0;
         var cloneBoundingSphere = true;
@@ -747,29 +733,13 @@ define([
             var widthBufferUsage = collection._buffersUsage[WIDTH_INDEX].bufferUsage;
             var texCoordExpandWidthAndShowBufferUsage = (showBufferUsage === BufferUsage.STREAM_DRAW || widthBufferUsage === BufferUsage.STREAM_DRAW) ? BufferUsage.STREAM_DRAW : BufferUsage.STATIC_DRAW;
 
-            collection._positionBuffer = Buffer.createVertexBuffer({
-                context : context,
-                typedArray : positionArray,
-                usage : positionBufferUsage
-            });
+            collection._positionBuffer = context.createVertexBuffer(positionArray, positionBufferUsage);
             var position3DBuffer;
             if (defined(position3DArray)) {
-                position3DBuffer = Buffer.createVertexBuffer({
-                    context : context,
-                    typedArray : position3DArray,
-                    usage : positionBufferUsage
-                });
+                position3DBuffer = context.createVertexBuffer(position3DArray, positionBufferUsage);
             }
-            collection._pickColorBuffer = Buffer.createVertexBuffer({
-                context : context,
-                typedArray : pickColorArray,
-                usage : BufferUsage.STATIC_DRAW
-            });
-            collection._texCoordExpandWidthAndShowBuffer = Buffer.createVertexBuffer({
-                context : context,
-                typedArray : texCoordExpandWidthAndShowArray,
-                usage : texCoordExpandWidthAndShowBufferUsage
-            });
+            collection._pickColorBuffer = context.createVertexBuffer(pickColorArray, BufferUsage.STATIC_DRAW);
+            collection._texCoordExpandWidthAndShowBuffer = context.createVertexBuffer(texCoordExpandWidthAndShowArray, texCoordExpandWidthAndShowBufferUsage);
 
             var pickColorSizeInBytes = 4 * Uint8Array.BYTES_PER_ELEMENT;
             var positionSizeInBytes = 3 * Float32Array.BYTES_PER_ELEMENT;
@@ -782,12 +752,7 @@ define([
 
                 if (indices.length > 0) {
                     var indicesArray = new Uint16Array(indices);
-                    var indexBuffer = Buffer.createIndexBuffer({
-                        context : context,
-                        typedArray : indicesArray,
-                        usage : BufferUsage.STATIC_DRAW,
-                        indexDatatype : IndexDatatype.UNSIGNED_SHORT
-                    });
+                    var indexBuffer = context.createIndexBuffer(indicesArray, BufferUsage.STATIC_DRAW, IndexDatatype.UNSIGNED_SHORT);
 
                     vbo += vertexBufferOffset[k];
 
@@ -922,11 +887,7 @@ define([
                     attributes[10][bufferProperty2D] = buffer2D;
                     attributes[11][bufferProperty2D] = buffer2D;
 
-                    var va = new VertexArray({
-                        context : context,
-                        attributes : attributes,
-                        indexBuffer : indexBuffer
-                    });
+                    var va = context.createVertexArray(attributes, indexBuffer);
                     collection._vertexArrays.push({
                         va : va,
                         buckets : vertexArrayBuckets[k]
@@ -1079,25 +1040,13 @@ define([
             sources : fs.sources,
             pickColorQualifier : 'varying'
         });
-
-        this.shaderProgram = ShaderProgram.fromCache({
-            context : context,
-            vertexShaderSource : vs,
-            fragmentShaderSource : fs,
-            attributeLocations : attributeLocations
-        });
-
-        this.pickShaderProgram = ShaderProgram.fromCache({
-            context : context,
-            vertexShaderSource : vs,
-            fragmentShaderSource : fsPick,
-            attributeLocations : attributeLocations
-        });
+        this.shaderProgram = context.createShaderProgram(vs, fs, attributeLocations);
+        this.pickShaderProgram = context.createShaderProgram(vs, fsPick, attributeLocations);
     };
 
     function intersectsIDL(polyline) {
         return Cartesian3.dot(Cartesian3.UNIT_X, polyline._boundingVolume.center) < 0 ||
-            polyline._boundingVolume.intersectPlane(Plane.ORIGIN_ZX_PLANE) === Intersect.INTERSECTING;
+            polyline._boundingVolume.intersect(Cartesian4.UNIT_Y) === Intersect.INTERSECTING;
     }
 
     PolylineBucket.prototype.getPolylinePositionsLength = function(polyline) {
@@ -1327,7 +1276,7 @@ define([
                 for ( var j = 0; j < numberOfSegments; ++j) {
                     var segmentLength = segments[j] - 1.0;
                     for ( var k = 0; k < segmentLength; ++k) {
-                        if (indicesCount + 4 >= CesiumMath.SIXTY_FOUR_KILOBYTES - 2) {
+                        if (indicesCount + 4 >= CesiumMath.SIXTY_FOUR_KILOBYTES - 1) {
                             polyline._locatorBuckets.push({
                                 locator : bucketLocator,
                                 count : segmentIndexCount
@@ -1359,7 +1308,7 @@ define([
                     count : segmentIndexCount
                 });
 
-                if (indicesCount + 4 >= CesiumMath.SIXTY_FOUR_KILOBYTES - 2) {
+                if (indicesCount + 4 >= CesiumMath.SIXTY_FOUR_KILOBYTES - 1) {
                     vertexBufferOffset.push(0);
                     indices = [];
                     totalIndices.push(indices);

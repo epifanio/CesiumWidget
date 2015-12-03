@@ -44,7 +44,6 @@ define([
      * @param {Property} [options.translucencyByDistance] A {@link NearFarScalar} Property used to set translucency based on distance from the camera.
      * @param {Property} [options.pixelOffsetScaleByDistance] A {@link NearFarScalar} Property used to set pixelOffset based on distance from the camera.
      * @param {Property} [options.imageSubRegion] A Property specifying a {@link BoundingRectangle} that defines a sub-region of the image to use for the billboard, rather than the entire image.
-     * @param {Property} [options.sizeInMeters] A boolean Property specifying whether this billboard's size should be measured in meters.
      *
      * @demo {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Billboards.html|Cesium Sandcastle Billboard Demo}
      */
@@ -81,8 +80,6 @@ define([
         this._translucencyByDistanceSubscription = undefined;
         this._pixelOffsetScaleByDistance = undefined;
         this._pixelOffsetScaleByDistanceSubscription = undefined;
-        this._sizeInMeters = undefined;
-        this._sizeInMetersSubscription = undefined;
         this._definitionChanged = new Event();
 
         this.merge(defaultValue(options, defaultValue.EMPTY_OBJECT));
@@ -286,15 +283,7 @@ define([
          * @memberof BillboardGraphics.prototype
          * @type {Property}
          */
-        pixelOffsetScaleByDistance : createPropertyDescriptor('pixelOffsetScaleByDistance'),
-
-        /**
-         * Gets or sets the boolean Property specifying if this billboard's size will be measured in meters.
-         * @memberof BillboardGraphics.prototype
-         * @type {Property}
-         * @default false
-         */
-        sizeInMeters : createPropertyDescriptor('sizeInMeters')
+        pixelOffsetScaleByDistance : createPropertyDescriptor('pixelOffsetScaleByDistance')
     });
 
     /**
@@ -323,7 +312,6 @@ define([
         result.scaleByDistance = this._scaleByDistance;
         result.translucencyByDistance = this._translucencyByDistance;
         result.pixelOffsetScaleByDistance = this._pixelOffsetScaleByDistance;
-        result.sizeInMeters = this._sizeInMeters;
         return result;
     };
 
@@ -356,7 +344,6 @@ define([
         this.scaleByDistance = defaultValue(this._scaleByDistance, source.scaleByDistance);
         this.translucencyByDistance = defaultValue(this._translucencyByDistance, source.translucencyByDistance);
         this.pixelOffsetScaleByDistance = defaultValue(this._pixelOffsetScaleByDistance, source.pixelOffsetScaleByDistance);
-        this.sizeInMeters = defaultValue(this._sizeInMeters, source.sizeInMeters);
     };
 
     return BillboardGraphics;

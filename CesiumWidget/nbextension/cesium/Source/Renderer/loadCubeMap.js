@@ -3,14 +3,12 @@ define([
         '../Core/defined',
         '../Core/DeveloperError',
         '../Core/loadImage',
-        '../ThirdParty/when',
-        './CubeMap'
+        '../ThirdParty/when'
     ], function(
         defined,
         DeveloperError,
         loadImage,
-        when,
-        CubeMap) {
+        when) {
     "use strict";
 
     /**
@@ -24,7 +22,7 @@ define([
      * @param {Boolean} [allowCrossOrigin=true] Whether to request the image using Cross-Origin
      *        Resource Sharing (CORS).  CORS is only actually used if the image URL is actually cross-origin.
      *        Data URIs are never requested using CORS.
-     * @returns {Promise.<CubeMap>} a promise that will resolve to the requested {@link CubeMap} when loaded.
+     * @returns {Promise} a promise that will resolve to the requested {@link CubeMap} when loaded.
      *
      * @exception {DeveloperError} context is required.
      * @exception {DeveloperError} urls is required and must have positiveX, negativeX, positiveY, negativeY, positiveZ, and negativeZ properties.
@@ -80,8 +78,7 @@ define([
         ];
 
         return when.all(facePromises, function(images) {
-            return new CubeMap({
-                context : context,
+            return context.createCubeMap({
                 source : {
                     positiveX : images[0],
                     negativeX : images[1],

@@ -1,10 +1,8 @@
 /*global define*/
 define([
-        '../Core/freezeObject',
-        '../Renderer/WebGLConstants'
+        '../Core/freezeObject'
     ], function(
-        freezeObject,
-        WebGLConstants) {
+        freezeObject) {
     "use strict";
 
     /**
@@ -15,68 +13,68 @@ define([
      */
     var StencilOperation = {
         /**
-         * Sets the stencil buffer value to zero.
+         * 0.  Sets the stencil buffer value to zero.
          *
          * @type {Number}
          * @constant
          */
-        ZERO : WebGLConstants.ZERO,
+        ZERO : 0,
 
         /**
-         * Does not change the stencil buffer.
+         * 0x1E00.  Does not change the stencil buffer.
          *
          * @type {Number}
          * @constant
          */
-        KEEP : WebGLConstants.KEEP,
+        KEEP : 0x1E00,
 
         /**
-         * Replaces the stencil buffer value with the reference value.
+         * 0x1E01.  Replaces the stencil buffer value with the reference value.
          *
          * @type {Number}
          * @constant
          */
-        REPLACE : WebGLConstants.REPLACE,
+        REPLACE : 0x1E01,
 
         /**
-         * Increments the stencil buffer value, clamping to unsigned byte.
+         * 0x1E02.  Increments the stencil buffer value, clamping to unsigned byte.
          *
          * @type {Number}
          * @constant
          */
-        INCREMENT : WebGLConstants.INCR,
+        INCREMENT : 0x1E02, // WebGL: INCR
 
         /**
-         * Decrements the stencil buffer value, clamping to zero.
+         * 0x1E03.  Decrements the stencil buffer value, clamping to zero.
          *
          * @type {Number}
          * @constant
          */
-        DECREMENT : WebGLConstants.DECR,
+        DECREMENT : 0x1E03, // WebGL: DECR
 
         /**
-         * Bitwise inverts the existing stencil buffer value.
+         * 0x150A. Bitwise inverts the existing stencil buffer value.
          *
          * @type {Number}
          * @constant
          */
-        INVERT : WebGLConstants.INVERT,
+        INVERT : 0x150A,
 
         /**
-         * Increments the stencil buffer value, wrapping to zero when exceeding the unsigned byte range.
+         * 0x8507.  Increments the stencil buffer value, wrapping to zero when exceeding the unsigned byte range.
          *
          * @type {Number}
          * @constant
          */
-        INCREMENT_WRAP : WebGLConstants.INCR_WRAP,
+        INCREMENT_WRAP : 0x8507, // WebGL: INCR_WRAP
 
         /**
-         * Decrements the stencil buffer value, wrapping to the maximum unsigned byte instead of going below zero.
+         * 0x8508.  Decrements the stencil buffer value, wrapping to the maximum unsigned byte instead of going below zero.
          *
          * @type {Number}
          * @constant
          */
-        DECREMENT_WRAP : WebGLConstants.DECR_WRAP
+        DECREMENT_WRAP : 0x8508  // WebGL: DECR_WRAP
     };
 
     return freezeObject(StencilOperation);

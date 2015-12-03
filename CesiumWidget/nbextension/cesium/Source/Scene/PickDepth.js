@@ -4,22 +4,17 @@ define([
         '../Core/defineProperties',
         '../Core/destroyObject',
         '../Core/PixelFormat',
-        '../Renderer/Framebuffer',
         '../Renderer/PixelDatatype',
-        '../Renderer/RenderState',
-        '../Renderer/Texture',
         '../Shaders/PostProcessFilters/PassThrough'
     ], function(
         defined,
         defineProperties,
         destroyObject,
         PixelFormat,
-        Framebuffer,
         PixelDatatype,
-        RenderState,
-        Texture,
         PassThrough) {
     "use strict";
+    /*global WebGLRenderingContext*/
 
     /**
      * @private
@@ -71,8 +66,7 @@ define([
     }
 
     function createTextures(pickDepth, context, width, height) {
-        pickDepth._depthTexture = new Texture({
-            context : context,
+        pickDepth._depthTexture = context.createTexture2D({
             width : width,
             height : height,
             pixelFormat : PixelFormat.RGBA,
@@ -86,8 +80,7 @@ define([
 
         createTextures(pickDepth, context, width, height);
 
-        pickDepth.framebuffer = new Framebuffer({
-            context : context,
+        pickDepth.framebuffer = context.createFramebuffer({
             colorTextures : [pickDepth._depthTexture],
             destroyAttachments : false
         });
@@ -114,7 +107,7 @@ define([
                 '    gl_FragColor = czm_packDepth(texture2D(u_texture, v_textureCoordinates).r);\n' +
                 '}\n';
             pickDepth._copyDepthCommand = context.createViewportQuadCommand(fs, {
-                renderState : RenderState.fromCache(),
+                renderState : context.createRenderState(),
                 uniformMap : {
                     u_texture : function() {
                         return pickDepth._textureToCopy;

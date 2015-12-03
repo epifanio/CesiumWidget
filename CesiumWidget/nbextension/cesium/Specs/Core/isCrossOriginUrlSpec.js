@@ -6,6 +6,7 @@ defineSuite([
         isCrossOriginUrl,
         Uri) {
     "use strict";
+    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn*/
 
     it('returns false for relative urls', function() {
         expect(isCrossOriginUrl('/some/url.jpg')).toEqual(false);

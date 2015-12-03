@@ -1,19 +1,17 @@
 /*global define*/
 define([
-        '../Core/freezeObject',
-        './WebGLConstants'
+        '../Core/freezeObject'
     ], function(
-        freezeObject,
-        WebGLConstants) {
+        freezeObject) {
     "use strict";
 
     /**
      * @private
      */
     var MipmapHint = {
-        DONT_CARE : WebGLConstants.DONT_CARE,
-        FASTEST : WebGLConstants.FASTEST,
-        NICEST : WebGLConstants.NICEST,
+        DONT_CARE : 0x1100,
+        FASTEST : 0x1101,
+        NICEST : 0x1102,
 
         validate : function(mipmapHint) {
             return ((mipmapHint === MipmapHint.DONT_CARE) ||

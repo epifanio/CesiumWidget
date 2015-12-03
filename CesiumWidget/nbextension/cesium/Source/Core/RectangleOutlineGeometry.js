@@ -116,7 +116,7 @@ define([
         var minHeight = Math.min(extrudedHeight, surfaceHeight);
         var maxHeight = Math.max(extrudedHeight, surfaceHeight);
         var geo = constructRectangle(options);
-        if (CesiumMath.equalsEpsilon(minHeight, maxHeight, CesiumMath.EPSILON10)) {
+        if (CesiumMath.equalsEpsilon(minHeight, maxHeight, 0.1)) {
             return geo;
         }
         var height = options.height;
@@ -231,7 +231,7 @@ define([
     /**
      * Stores the provided instance into the provided array.
      *
-     * @param {RectangleOutlineGeometry} value The value to pack.
+     * @param {BoundingSphere} value The value to pack.
      * @param {Number[]} array The array to pack into.
      * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
      */
@@ -277,8 +277,7 @@ define([
      *
      * @param {Number[]} array The packed array.
      * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
-     * @param {RectangleOutlineGeometry} [result] The object into which to store the result.
-     * @returns {RectangleOutlineGeometry} The modified result parameter or a new Quaternion instance if one was not provided.
+     * @param {RectangleGeometry} [result] The object into which to store the result.
      */
     RectangleOutlineGeometry.unpack = function(array, startingIndex, result) {
         //>>includeStart('debug', pragmas.debug);

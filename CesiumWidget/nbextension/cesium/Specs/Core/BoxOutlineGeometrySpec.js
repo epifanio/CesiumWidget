@@ -1,15 +1,14 @@
 /*global defineSuite*/
 defineSuite([
         'Core/BoxOutlineGeometry',
-        'Core/AxisAlignedBoundingBox',
         'Core/Cartesian3',
         'Specs/createPackableSpecs'
     ], function(
         BoxOutlineGeometry,
-        AxisAlignedBoundingBox,
         Cartesian3,
         createPackableSpecs) {
     "use strict";
+    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn*/
 
     it('constructor throws without minimum corner', function() {
         expect(function() {
@@ -60,22 +59,8 @@ defineSuite([
         expect(m.indices.length).toEqual(12 * 2);
     });
 
-    it('fromAxisAlignedBoundingBox throws with no boundingBox', function() {
-       expect(function() {
-           return BoxOutlineGeometry.fromAxisAlignedBoundingBox(undefined);
-       }).toThrowDeveloperError();
-    });
-
-    it('fromAxisAlignedBoundingBox', function() {
-        var min = new Cartesian3(-1, -2, -3);
-        var max = new Cartesian3(1, 2, 3);
-        var m = BoxOutlineGeometry.fromAxisAlignedBoundingBox(new AxisAlignedBoundingBox(min, max));
-        expect(m._min).toEqual(min);
-        expect(m._max).toEqual(max);
-    });
-
     createPackableSpecs(BoxOutlineGeometry, new BoxOutlineGeometry({
-        minimum : new Cartesian3(1.0, 2.0, 3.0),
-        maximum : new Cartesian3(4.0, 5.0, 6.0)
+        minimumCorner : new Cartesian3(1.0, 2.0, 3.0),
+        maximumCorner : new Cartesian3(4.0, 5.0, 6.0)
     }), [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
 });

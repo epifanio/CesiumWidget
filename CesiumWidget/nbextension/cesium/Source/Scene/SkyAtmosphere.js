@@ -11,10 +11,7 @@ define([
         '../Core/VertexFormat',
         '../Renderer/BufferUsage',
         '../Renderer/DrawCommand',
-        '../Renderer/RenderState',
-        '../Renderer/ShaderProgram',
         '../Renderer/ShaderSource',
-        '../Renderer/VertexArray',
         '../Shaders/SkyAtmosphereFS',
         '../Shaders/SkyAtmosphereVS',
         './BlendingState',
@@ -32,10 +29,7 @@ define([
         VertexFormat,
         BufferUsage,
         DrawCommand,
-        RenderState,
-        ShaderProgram,
         ShaderSource,
-        VertexArray,
         SkyAtmosphereFS,
         SkyAtmosphereVS,
         BlendingState,
@@ -133,7 +127,7 @@ define([
     /**
      * @private
      */
-    SkyAtmosphere.prototype.update = function(frameState) {
+    SkyAtmosphere.prototype.update = function(context, frameState) {
         if (!this.show) {
             return undefined;
         }
@@ -151,21 +145,18 @@ define([
         var command = this._command;
 
         if (!defined(command.vertexArray)) {
-            var context = frameState.context;
-
             var geometry = EllipsoidGeometry.createGeometry(new EllipsoidGeometry({
                 radii : Cartesian3.multiplyByScalar(this._ellipsoid.radii, 1.025, new Cartesian3()),
                 slicePartitions : 256,
                 stackPartitions : 256,
                 vertexFormat : VertexFormat.POSITION_ONLY
             }));
-            command.vertexArray = VertexArray.fromGeometry({
-                context : context,
+            command.vertexArray = context.createVertexArrayFromGeometry({
                 geometry : geometry,
                 attributeLocations : GeometryPipeline.createAttributeLocations(geometry),
                 bufferUsage : BufferUsage.STATIC_DRAW
             });
-            command.renderState = RenderState.fromCache({
+            command.renderState = context.createRenderState({
                 cull : {
                     enabled : true,
                     face : CullFace.FRONT
@@ -177,21 +168,13 @@ define([
                 defines : ['SKY_FROM_SPACE'],
                 sources : [SkyAtmosphereVS]
             });
-            this._spSkyFromSpace = ShaderProgram.fromCache({
-                context : context,
-                vertexShaderSource : vs,
-                fragmentShaderSource : SkyAtmosphereFS
-            });
+            this._spSkyFromSpace = context.createShaderProgram(vs, SkyAtmosphereFS);
 
             vs = new ShaderSource({
                 defines : ['SKY_FROM_ATMOSPHERE'],
                 sources : [SkyAtmosphereVS]
             });
-            this._spSkyFromAtmosphere = ShaderProgram.fromCache({
-                context : context,
-                vertexShaderSource : vs,
-                fragmentShaderSource : SkyAtmosphereFS
-            });
+            this._spSkyFromAtmosphere = context.createShaderProgram(vs, SkyAtmosphereFS);
         }
 
         var cameraPosition = frameState.camera.positionWC;

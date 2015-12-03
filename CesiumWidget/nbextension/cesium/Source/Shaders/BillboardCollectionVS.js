@@ -1,16 +1,13 @@
-//This file is automatically rebuilt by the Cesium build process.
-/*global define*/
-define(function() {
+    //This file is automatically rebuilt by the Cesium build process.
+    /*global define*/
+    define(function() {
     "use strict";
-    return "#ifdef INSTANCED\n\
-attribute vec2 direction;\n\
-#endif\n\
-attribute vec4 positionHighAndScale;\n\
+    return "attribute vec4 positionHighAndScale;\n\
 attribute vec4 positionLowAndRotation;   \n\
-attribute vec4 compressedAttribute0;        // pixel offset, translate, horizontal origin, vertical origin, show, direction, texture coordinates (texture offset)\n\
+attribute vec4 compressedAttribute0;        // pixel offset, translate, horizontal origin, vertical origin, show, texture coordinates, direction\n\
 attribute vec4 compressedAttribute1;        // aligned axis, translucency by distance, image width\n\
-attribute vec4 compressedAttribute2;        // image height, color, pick color, 15 bits free\n\
-attribute vec4 eyeOffset;                   // eye offset in meters, 4 bytes free (texture range)\n\
+attribute vec4 compressedAttribute2;        // image height, color, pick color, 2 bytes free\n\
+attribute vec3 eyeOffset;                   // eye offset in meters\n\
 attribute vec4 scaleByDistance;             // near, nearScale, far, farScale\n\
 attribute vec4 pixelOffsetScaleByDistance;  // near, nearScale, far, farScale\n\
 \n\
@@ -39,26 +36,14 @@ const float SHIFT_RIGHT3 = 1.0 / 8.0;\n\
 const float SHIFT_RIGHT2 = 1.0 / 4.0;\n\
 const float SHIFT_RIGHT1 = 1.0 / 2.0;\n\
 \n\
-vec4 computePositionWindowCoordinates(vec4 positionEC, vec2 imageSize, float scale, vec2 direction, vec2 origin, vec2 translate, vec2 pixelOffset, vec3 alignedAxis, float rotation, bool sizeInMeters)\n\
+vec4 computePositionWindowCoordinates(vec4 positionEC, vec2 imageSize, float scale, vec2 direction, vec2 origin, vec2 translate, vec2 pixelOffset, vec3 alignedAxis, float rotation)\n\
 {\n\
+    vec4 positionWC = czm_eyeToWindowCoordinates(positionEC);\n\
+    \n\
     vec2 halfSize = imageSize * scale * czm_resolutionScale;\n\
     halfSize *= ((direction * 2.0) - 1.0);\n\
     \n\
-    if (sizeInMeters)\n\
-    {\n\
-        positionEC.xy += halfSize;\n\
-    }\n\
-    \n\
-    vec4 positionWC = czm_eyeToWindowCoordinates(positionEC);\n\
-    \n\
-    if (sizeInMeters)\n\
-    {\n\
-        positionWC.xy += (origin * abs(halfSize)) / czm_metersPerPixel(positionEC);\n\
-    }\n\
-    else\n\
-    {\n\
-        positionWC.xy += (origin * abs(halfSize));\n\
-    }\n\
+    positionWC.xy += (origin * abs(halfSize));\n\
     \n\
 #if defined(ROTATION) || defined(ALIGNED_AXIS)\n\
     if (!all(equal(alignedAxis, vec3(0.0))) || rotation != 0.0)\n\
@@ -80,11 +65,7 @@ vec4 computePositionWindowCoordinates(vec4 positionEC, vec2 imageSize, float sca
     }\n\
 #endif\n\
     \n\
-    if (!sizeInMeters)\n\
-    {\n\
-        positionWC.xy += halfSize;\n\
-    }\n\
-    \n\
+    positionWC.xy += halfSize;\n\
     positionWC.xy += translate;\n\
     positionWC.xy += (pixelOffset * czm_resolutionScale);\n\
     \n\
@@ -124,18 +105,10 @@ void main() \n\
     \n\
     float show = floor(compressed * SHIFT_RIGHT2);\n\
     compressed -= show * SHIFT_LEFT2;\n\
-\n\
-#ifdef INSTANCED\n\
-    vec2 textureCoordinatesBottomLeft = czm_decompressTextureCoordinates(compressedAttribute0.w);\n\
-    vec2 textureCoordinatesRange = czm_decompressTextureCoordinates(eyeOffset.w);\n\
-    vec2 textureCoordinates = textureCoordinatesBottomLeft + direction * textureCoordinatesRange;\n\
-#else\n\
+    \n\
     vec2 direction;\n\
     direction.x = floor(compressed * SHIFT_RIGHT1);\n\
     direction.y = compressed - direction.x * SHIFT_LEFT1;\n\
-\n\
-    vec2 textureCoordinates = czm_decompressTextureCoordinates(compressedAttribute0.w);\n\
-#endif\n\
     \n\
     float temp = compressedAttribute0.y  * SHIFT_RIGHT8;\n\
     pixelOffset.y = -(floor(temp) - UPPER_BOUND);\n\
@@ -148,7 +121,9 @@ void main() \n\
     \n\
     translate.y += (temp - floor(temp)) * SHIFT_LEFT8;\n\
     translate.y -= UPPER_BOUND;\n\
-\n\
+    \n\
+    vec2 textureCoordinates = czm_decompressTextureCoordinates(compressedAttribute0.w);\n\
+    \n\
     temp = compressedAttribute1.x * SHIFT_RIGHT8;\n\
     \n\
     vec2 imageSize = vec2(floor(temp), compressedAttribute2.w);\n\
@@ -184,8 +159,6 @@ void main() \n\
     color.r = floor(temp);\n\
     \n\
     temp = compressedAttribute2.z * SHIFT_RIGHT8;\n\
-    bool sizeInMeters = (temp - floor(temp)) * SHIFT_LEFT8 > 0.0;\n\
-    temp = floor(temp) * SHIFT_RIGHT8;\n\
     \n\
 #ifdef RENDER_FOR_PICK\n\
     color.a = (temp - floor(temp)) * SHIFT_LEFT8;\n\
@@ -199,7 +172,7 @@ void main() \n\
     \n\
     vec4 p = czm_translateRelativeToEye(positionHigh, positionLow);\n\
     vec4 positionEC = czm_modelViewRelativeToEye * p;\n\
-    positionEC = czm_eyeOffset(positionEC, eyeOffset.xyz);\n\
+    positionEC = czm_eyeOffset(positionEC, eyeOffset);\n\
     positionEC.xyz *= show;\n\
     \n\
     ///////////////////////////////////////////////////////////////////////////     \n\
@@ -250,7 +223,7 @@ void main() \n\
     origin.y = 1.0;\n\
 #endif\n\
 \n\
-    vec4 positionWC = computePositionWindowCoordinates(positionEC, imageSize, scale, direction, origin, translate, pixelOffset, alignedAxis, rotation, sizeInMeters);\n\
+    vec4 positionWC = computePositionWindowCoordinates(positionEC, imageSize, scale, direction, origin, translate, pixelOffset, alignedAxis, rotation);\n\
     gl_Position = czm_viewportOrthographic * vec4(positionWC.xy, -positionWC.z, 1.0);\n\
     v_textureCoordinates = textureCoordinates;\n\
 \n\

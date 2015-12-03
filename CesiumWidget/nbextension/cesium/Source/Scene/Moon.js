@@ -116,7 +116,7 @@ define([
     /**
      * @private
      */
-    Moon.prototype.update = function(frameState) {
+    Moon.prototype.update = function(context, frameState) {
         if (!this.show) {
             return;
         }
@@ -139,11 +139,8 @@ define([
 
         Matrix4.fromRotationTranslation(rotation, translation, ellipsoidPrimitive.modelMatrix);
 
-        var savedCommandList = frameState.commandList;
-        frameState.commandList = scratchCommandList;
         scratchCommandList.length = 0;
-        ellipsoidPrimitive.update(frameState);
-        frameState.commandList = savedCommandList;
+        ellipsoidPrimitive.update(context, frameState, scratchCommandList);
         return (scratchCommandList.length === 1) ? scratchCommandList[0] : undefined;
     };
 

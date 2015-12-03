@@ -12,13 +12,9 @@ define([
         '../Core/PixelFormat',
         '../Core/Transforms',
         '../Renderer/ClearCommand',
-        '../Renderer/Framebuffer',
         '../Renderer/PassState',
         '../Renderer/PixelDatatype',
-        '../Renderer/Renderbuffer',
         '../Renderer/RenderbufferFormat',
-        '../Renderer/RenderState',
-        '../Renderer/Texture',
         '../Shaders/PostProcessFilters/AdditiveBlend',
         '../Shaders/PostProcessFilters/BrightPass',
         '../Shaders/PostProcessFilters/GaussianBlur1D',
@@ -36,13 +32,9 @@ define([
         PixelFormat,
         Transforms,
         ClearCommand,
-        Framebuffer,
         PassState,
         PixelDatatype,
-        Renderbuffer,
         RenderbufferFormat,
-        RenderState,
-        Texture,
         AdditiveBlend,
         BrightPass,
         GaussianBlur1D,
@@ -238,18 +230,15 @@ define([
 
             this._blurStep.x = this._blurStep.y = 1.0 / downSampleSize;
 
-            var colorTextures = [new Texture({
-                context : context,
+            var colorTextures = [context.createTexture2D({
                 width : width,
                 height : height
             })];
 
             if (context.depthTexture) {
-                fbo = this._fbo = new Framebuffer({
-                    context : context,
+                fbo = this._fbo = context.createFramebuffer({
                     colorTextures :colorTextures,
-                    depthTexture : new Texture({
-                        context : context,
+                    depthTexture : context.createTexture2D({
                         width : width,
                         height : height,
                         pixelFormat : PixelFormat.DEPTH_COMPONENT,
@@ -257,28 +246,22 @@ define([
                     })
                 });
             } else {
-                fbo = this._fbo = new Framebuffer({
-                    context : context,
+                fbo = this._fbo = context.createFramebuffer({
                     colorTextures : colorTextures,
-                    depthRenderbuffer : new Renderbuffer({
-                        context : context,
+                    depthRenderbuffer : context.createRenderbuffer({
                         format : RenderbufferFormat.DEPTH_COMPONENT16
                     })
                 });
             }
 
-            this._downSampleFBO1 = new Framebuffer({
-                context : context,
-                colorTextures : [new Texture({
-                    context : context,
+            this._downSampleFBO1 = context.createFramebuffer({
+                colorTextures : [context.createTexture2D({
                     width : downSampleSize,
                     height : downSampleSize
                 })]
             });
-            this._downSampleFBO2 = new Framebuffer({
-                context : context,
-                colorTextures : [new Texture({
-                    context : context,
+            this._downSampleFBO2 = context.createFramebuffer({
+                colorTextures : [context.createTexture2D({
                     width : downSampleSize,
                     height : downSampleSize
                 })]
@@ -291,10 +274,10 @@ define([
             this._blurXCommand.framebuffer = this._downSampleFBO1;
             this._blurYCommand.framebuffer = this._downSampleFBO2;
 
-            var downSampleRenderState = RenderState.fromCache({
+            var downSampleRenderState = context.createRenderState({
                 viewport : downSampleViewport
             });
-            var upSampleRenderState = RenderState.fromCache();
+            var upSampleRenderState = context.createRenderState();
 
             this._downSampleCommand.uniformMap.u_texture = function() {
                 return fbo.getColorTexture(0);

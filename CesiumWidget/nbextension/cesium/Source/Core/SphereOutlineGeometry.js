@@ -63,7 +63,7 @@ define([
      * Stores the provided instance into the provided array.
      * @function
      *
-     * @param {SphereOutlineGeometry} value The value to pack.
+     * @param {Object} value The value to pack.
      * @param {Number[]} array The array to pack into.
      * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
      */
@@ -92,7 +92,6 @@ define([
      * @param {Number[]} array The packed array.
      * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
      * @param {SphereOutlineGeometry} [result] The object into which to store the result.
-     * @returns {SphereOutlineGeometry} The modified result parameter or a new SphereOutlineGeometry instance if one was not provided.
      */
     SphereOutlineGeometry.unpack = function(array, startingIndex, result) {
         var ellipsoidGeometry = EllipsoidOutlineGeometry.unpack(array, startingIndex, scratchEllipsoidGeometry);

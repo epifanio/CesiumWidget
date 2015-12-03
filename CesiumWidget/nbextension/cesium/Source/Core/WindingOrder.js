@@ -1,9 +1,7 @@
 /*global define*/
 define([
-        '../Renderer/WebGLConstants',
         './freezeObject'
     ], function(
-        WebGLConstants,
         freezeObject) {
     "use strict";
 
@@ -15,20 +13,20 @@ define([
      */
     var WindingOrder = {
         /**
-         * Vertices are in clockwise order.
+         * 0x0900. Vertices are in clockwise order.
          *
          * @type {Number}
          * @constant
          */
-        CLOCKWISE : WebGLConstants.CW,
+        CLOCKWISE : 0x0900, // WebGL: CW
 
         /**
-         * Vertices are in counter-clockwise order.
+         * 0x0901. Vertices are in counter-clockwise order.
          *
          * @type {Number}
          * @constant
          */
-        COUNTER_CLOCKWISE : WebGLConstants.CCW,
+        COUNTER_CLOCKWISE : 0x0901, // WebGL: CCW
 
         /**
          * @private

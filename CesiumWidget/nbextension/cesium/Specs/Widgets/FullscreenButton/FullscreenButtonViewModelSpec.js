@@ -6,6 +6,7 @@ defineSuite([
         FullscreenButtonViewModel,
         Fullscreen) {
     "use strict";
+    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn*/
 
     it('constructor sets default values', function() {
         var viewModel = new FullscreenButtonViewModel();

@@ -5,10 +5,6 @@ define([
         defined) {
     "use strict";
 
-    if (typeof window === 'undefined') {
-        return;
-    }
-
     var implementation = window.cancelAnimationFrame;
     (function() {
         // look for vendor prefixed function

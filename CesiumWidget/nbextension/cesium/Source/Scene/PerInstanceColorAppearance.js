@@ -63,18 +63,14 @@ define([
      *   geometry : new Cesium.RectangleGeometry({
      *     rectangle : Cesium.Rectangle.fromDegrees(0.0, 20.0, 10.0, 30.0)
      *   }),
-     *   attributes : {
-     *     color : new Cesium.Color(1.0, 0.0, 0.0, 0.5)
-     *   }
+     *   color : new Cesium.Color(1.0, 0.0, 0.0, 0.5)
      * });
      *
      * var anotherInstance = new Cesium.GeometryInstance({
      *   geometry : new Cesium.RectangleGeometry({
      *     rectangle : Cesium.Rectangle.fromDegrees(0.0, 40.0, 10.0, 50.0)
      *   }),
-     *   attributes : {
-     *     color : new Cesium.Color(0.0, 0.0, 1.0, 0.5)
-     *   }
+     *   color : new Cesium.Color(0.0, 0.0, 1.0, 0.5)
      * });
      *
      * var rectanglePrimitive = new Cesium.Primitive({
@@ -272,7 +268,7 @@ define([
      *
      * @function
      *
-     * @returns {String} The full GLSL fragment shader source.
+     * @returns String The full GLSL fragment shader source.
      */
     PerInstanceColorAppearance.prototype.getFragmentShaderSource = Appearance.prototype.getFragmentShaderSource;
 

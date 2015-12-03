@@ -8,7 +8,6 @@ define([
         '../Core/DeveloperError',
         '../Core/Event',
         '../Core/getTimestamp',
-        '../Core/Math',
         '../Core/Queue',
         '../Core/Ray',
         '../Core/Rectangle',
@@ -27,7 +26,6 @@ define([
         DeveloperError,
         Event,
         getTimestamp,
-        CesiumMath,
         Queue,
         Ray,
         Rectangle,
@@ -244,22 +242,14 @@ define([
      * @param {DrawCommand[]} commandList The list of draw commands.  The primitive will usually add
      *        commands to this array during the update call.
      */
-    QuadtreePrimitive.prototype.update = function(frameState) {
-        var passes = frameState.passes;
+    QuadtreePrimitive.prototype.update = function(context, frameState, commandList) {
+        this._tileProvider.beginUpdate(context, frameState, commandList);
 
-        if (passes.render) {
-            this._tileProvider.beginUpdate(frameState);
+        selectTilesForRendering(this, context, frameState);
+        processTileLoadQueue(this, context, frameState);
+        createRenderCommandsForSelectedTiles(this, context, frameState, commandList);
 
-            selectTilesForRendering(this, frameState);
-            processTileLoadQueue(this, frameState);
-            createRenderCommandsForSelectedTiles(this, frameState);
-
-            this._tileProvider.endUpdate(frameState);
-        }
-
-        if (passes.pick && this._tilesToRender.length > 0) {
-            this._tileProvider.updateForPick(frameState);
-        }
+        this._tileProvider.endUpdate(context, frameState, commandList);
     };
 
     /**
@@ -301,7 +291,7 @@ define([
         this._tileProvider = this._tileProvider && this._tileProvider.destroy();
     };
 
-    function selectTilesForRendering(primitive, frameState) {
+    function selectTilesForRendering(primitive, context, frameState) {
         var debug = primitive._debug;
 
         if (debug.suspendLodUpdate) {
@@ -309,6 +299,7 @@ define([
         }
 
         var i;
+        var j;
         var len;
 
         // Clear the render list.
@@ -395,7 +386,7 @@ define([
             // This one doesn't load children unless we refine to them.
             // We may want to revisit this in the future.
 
-            if (screenSpaceError(primitive, frameState, tile) < primitive.maximumScreenSpaceError) {
+            if (screenSpaceError(primitive, context, frameState, tile) < primitive.maximumScreenSpaceError) {
                 // This tile meets SSE requirements, so render it.
                 addTileToRenderList(primitive, tile);
             } else if (queueChildrenLoadAndDetermineIfChildrenAreAllRenderable(primitive, tile)) {
@@ -422,6 +413,7 @@ define([
                 debug.maxDepth !== debug.lastMaxDepth ||
                 debug.tilesWaitingForChildren !== debug.lastTilesWaitingForChildren) {
 
+                /*global console*/
                 console.log('Visited ' + debug.tilesVisited + ', Rendered: ' + debug.tilesRendered + ', Culled: ' + debug.tilesCulled + ', Max Depth: ' + debug.maxDepth + ', Waiting for children: ' + debug.tilesWaitingForChildren);
 
                 debug.lastTilesVisited = debug.tilesVisited;
@@ -433,31 +425,29 @@ define([
         }
     }
 
-    function screenSpaceError(primitive, frameState, tile) {
+    function screenSpaceError(primitive, context, frameState, tile) {
         if (frameState.mode === SceneMode.SCENE2D) {
-            return screenSpaceError2D(primitive, frameState, tile);
+            return screenSpaceError2D(primitive, context, frameState, tile);
         }
 
         var maxGeometricError = primitive._tileProvider.getLevelMaximumGeometricError(tile.level);
 
-        var distance = tile._distance;
-        var height = frameState.context.drawingBufferHeight;
-        var sseDenominator = frameState.camera.frustum.sseDenominator;
+        var distance = primitive._tileProvider.computeDistanceToTile(tile, frameState);
+        tile._distance = distance;
 
-        var error = (maxGeometricError * height) / (distance * sseDenominator);
+        var height = context.drawingBufferHeight;
 
-        if (frameState.fog.enabled) {
-            error = error - CesiumMath.fog(distance, frameState.fog.density) * frameState.fog.sse;
-        }
-
-        return error;
-    }
-
-    function screenSpaceError2D(primitive, frameState, tile) {
         var camera = frameState.camera;
         var frustum = camera.frustum;
+        var fovy = frustum.fovy;
 
-        var context = frameState.context;
+        // PERFORMANCE_IDEA: factor out stuff that's constant across tiles.
+        return (maxGeometricError * height) / (2 * distance * Math.tan(0.5 * fovy));
+    }
+
+    function screenSpaceError2D(primitive, context, frameState, tile) {
+        var camera = frameState.camera;
+        var frustum = camera.frustum;
         var width = context.drawingBufferWidth;
         var height = context.drawingBufferHeight;
 
@@ -501,7 +491,7 @@ define([
         primitive._tileLoadQueue.push(tile);
     }
 
-    function processTileLoadQueue(primitive, frameState) {
+    function processTileLoadQueue(primitive, context, frameState) {
         var tileLoadQueue = primitive._tileLoadQueue;
         var tileProvider = primitive._tileProvider;
 
@@ -517,10 +507,10 @@ define([
         var timeSlice = primitive._loadQueueTimeSlice;
         var endTime = startTime + timeSlice;
 
-        for (var i = tileLoadQueue.length - 1; i >= 0; --i) {
+        for (var len = tileLoadQueue.length - 1, i = len; i >= 0; --i) {
             var tile = tileLoadQueue[i];
             primitive._tileReplacementQueue.markTileRendered(tile);
-            tileProvider.loadTile(frameState, tile);
+            tileProvider.loadTile(context, frameState, tile);
             if (getTimestamp() >= endTime) {
                 break;
             }
@@ -621,7 +611,7 @@ define([
         return a._distance - b._distance;
     }
 
-    function createRenderCommandsForSelectedTiles(primitive, frameState) {
+    function createRenderCommandsForSelectedTiles(primitive, context, frameState, commandList) {
         var tileProvider = primitive._tileProvider;
         var tilesToRender = primitive._tilesToRender;
         var tilesToUpdateHeights = primitive._tileToUpdateHeights;
@@ -630,7 +620,7 @@ define([
 
         for (var i = 0, len = tilesToRender.length; i < len; ++i) {
             var tile = tilesToRender[i];
-            tileProvider.showTileThisFrame(tile, frameState);
+            tileProvider.showTileThisFrame(tile, context, frameState, commandList);
 
             if (tile._frameRendered !== frameState.frameNumber - 1) {
                 tilesToUpdateHeights.push(tile);

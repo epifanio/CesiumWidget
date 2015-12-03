@@ -14,6 +14,8 @@ define([
      *
      * @namespace
      * @alias EasingFunction
+     *
+     * @private
      */
     var EasingFunction = {
         /**

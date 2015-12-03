@@ -11,7 +11,7 @@ define([
 
     var activeRequests = {};
 
-    var pageUri = typeof document !== 'undefined' ? new Uri(document.location.href) : new Uri();
+    var pageUri = new Uri(document.location.href);
     function getServer(url) {
         var uri = new Uri(url).resolve(pageUri);
         uri.normalize();
@@ -33,7 +33,7 @@ define([
      * @param {String} url The URL to request.
      * @param {throttleRequestByServer~RequestFunction} requestFunction The actual function that
      *        makes the request.
-     * @returns {Promise.<Object>|undefined} Either undefined, meaning the request would exceed the maximum number of
+     * @returns {Promise} Either undefined, meaning the request would exceed the maximum number of
      *          parallel requests, or a Promise for the requested data.
      *
      * @see {@link http://wiki.commonjs.org/wiki/Promises/A|CommonJS Promises/A}
@@ -87,7 +87,7 @@ define([
      * @callback throttleRequestByServer~RequestFunction
      *
      * @param {String} url The url to request.
-     * @returns {Promise.<Object>} A promise for the requested data.
+     * @returns {Promise} A promise for the requested data.
      */
 
     return throttleRequestByServer;

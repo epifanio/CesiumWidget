@@ -1,22 +1,20 @@
 /*global define*/
 define([
-        '../Core/freezeObject',
-        './WebGLConstants'
+        '../Core/freezeObject'
     ], function(
-        freezeObject,
-        WebGLConstants) {
+        freezeObject) {
     "use strict";
 
     /**
      * @private
      */
     var TextureMinificationFilter = {
-        NEAREST : WebGLConstants.NEAREST,
-        LINEAR : WebGLConstants.LINEAR,
-        NEAREST_MIPMAP_NEAREST : WebGLConstants.NEAREST_MIPMAP_NEAREST,
-        LINEAR_MIPMAP_NEAREST : WebGLConstants.LINEAR_MIPMAP_NEAREST,
-        NEAREST_MIPMAP_LINEAR : WebGLConstants.NEAREST_MIPMAP_LINEAR,
-        LINEAR_MIPMAP_LINEAR : WebGLConstants.LINEAR_MIPMAP_LINEAR,
+        NEAREST : 0x2600,
+        LINEAR : 0x2601,
+        NEAREST_MIPMAP_NEAREST : 0x2700,
+        LINEAR_MIPMAP_NEAREST : 0x2701,
+        NEAREST_MIPMAP_LINEAR : 0x2702,
+        LINEAR_MIPMAP_LINEAR : 0x2703,
 
         validate : function(textureMinificationFilter) {
             return ((textureMinificationFilter === TextureMinificationFilter.NEAREST) ||

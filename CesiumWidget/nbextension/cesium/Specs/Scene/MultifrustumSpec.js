@@ -14,12 +14,8 @@ defineSuite([
         'Core/Matrix4',
         'Renderer/BufferUsage',
         'Renderer/DrawCommand',
-        'Renderer/RenderState',
-        'Renderer/Sampler',
-        'Renderer/ShaderProgram',
         'Renderer/TextureMagnificationFilter',
         'Renderer/TextureMinificationFilter',
-        'Renderer/VertexArray',
         'Scene/BillboardCollection',
         'Scene/BlendingState',
         'Scene/Pass',
@@ -41,12 +37,8 @@ defineSuite([
         Matrix4,
         BufferUsage,
         DrawCommand,
-        RenderState,
-        Sampler,
-        ShaderProgram,
         TextureMagnificationFilter,
         TextureMinificationFilter,
-        VertexArray,
         BillboardCollection,
         BlendingState,
         Pass,
@@ -54,6 +46,7 @@ defineSuite([
         createScene,
         when) {
     "use strict";
+    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn*/
 
     var scene;
     var context;
@@ -111,7 +104,7 @@ defineSuite([
         });
 
         // ANGLE Workaround
-        atlas.texture.sampler = new Sampler({
+        atlas.texture.sampler = context.createSampler({
             minificationFilter : TextureMinificationFilter.NEAREST,
             magnificationFilter : TextureMagnificationFilter.NEAREST
         });
@@ -231,7 +224,7 @@ defineSuite([
             };
         };
 
-        Primitive.prototype.update = function(frameState) {
+        Primitive.prototype.update = function(context, frameState, commandList) {
             if (!defined(this._sp)) {
                 var vs = '';
                 vs += 'attribute vec4 position;';
@@ -248,33 +241,26 @@ defineSuite([
                 fs += '}';
 
                 var dimensions = new Cartesian3(500000.0, 500000.0, 500000.0);
-                var maximum = Cartesian3.multiplyByScalar(dimensions, 0.5, new Cartesian3());
-                var minimum = Cartesian3.negate(maximum, new Cartesian3());
+                var maximumCorner = Cartesian3.multiplyByScalar(dimensions, 0.5, new Cartesian3());
+                var minimumCorner = Cartesian3.negate(maximumCorner, new Cartesian3());
                 var geometry = BoxGeometry.createGeometry(new BoxGeometry({
-                    minimum : minimum,
-                    maximum : maximum
+                    minimumCorner: minimumCorner,
+                    maximumCorner: maximumCorner
                 }));
                 var attributeLocations = GeometryPipeline.createAttributeLocations(geometry);
-                this._va = VertexArray.fromGeometry({
-                    context : frameState.context,
-                    geometry : geometry,
-                    attributeLocations : attributeLocations,
-                    bufferUsage : BufferUsage.STATIC_DRAW
+                this._va = context.createVertexArrayFromGeometry({
+                    geometry: geometry,
+                    attributeLocations: attributeLocations,
+                    bufferUsage: BufferUsage.STATIC_DRAW
                 });
 
-                this._sp = ShaderProgram.fromCache({
-                    context : frameState.context,
-                    vertexShaderSource : vs,
-                    fragmentShaderSource : fs,
-                    attributeLocations : attributeLocations
-                });
-
-                this._rs = RenderState.fromCache({
+                this._sp = context.createShaderProgram(vs, fs, attributeLocations);
+                this._rs = context.createRenderState({
                     blending : BlendingState.ALPHA_BLEND
                 });
             }
 
-            frameState.commandList.push(new DrawCommand({
+            commandList.push(new DrawCommand({
                 renderState : this._rs,
                 shaderProgram : this._sp,
                 vertexArray : this._va,

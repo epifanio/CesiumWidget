@@ -14,6 +14,7 @@ defineSuite([
         CesiumMath,
         createPackableSpecs) {
     "use strict";
+    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn*/
 
     var west = -0.9;
     var south = 0.5;

@@ -5,8 +5,8 @@ define([
         'Cesium/Core/formatError',
         'Cesium/Core/getFilenameFromUri',
         'Cesium/Core/Math',
-        'Cesium/Core/objectToQuery',
         'Cesium/Core/queryToObject',
+        'Cesium/Core/objectToQuery',
         'Cesium/DataSources/CzmlDataSource',
         'Cesium/DataSources/GeoJsonDataSource',
         'Cesium/DataSources/KmlDataSource',
@@ -21,8 +21,8 @@ define([
         formatError,
         getFilenameFromUri,
         CesiumMath,
-        objectToQuery,
         queryToObject,
+        objectToQuery,
         CzmlDataSource,
         GeoJsonDataSource,
         KmlDataSource,
@@ -31,6 +31,7 @@ define([
         viewerCesiumInspectorMixin,
         viewerDragDropMixin) {
     "use strict";
+    /*global console*/
 
     /*
      * 'debug'  : true/false,   // Full WebGL error reporting at substantial performance cost.
@@ -155,23 +156,17 @@ define([
             var roll = ((splitQuery.length > 5) && (!isNaN(+splitQuery[5]))) ? CesiumMath.toRadians(+splitQuery[5]) : undefined;
 
             viewer.camera.setView({
-                destination: Cartesian3.fromDegrees(longitude, latitude, height),
-                orientation: {
-                    heading: heading,
-                    pitch: pitch,
-                    roll: roll
-                }
+                position: Cartesian3.fromDegrees(longitude, latitude, height),
+                heading: heading,
+                pitch: pitch,
+                roll: roll
             });
         }
     }
 
     function saveCamera() {
         var position = camera.positionCartographic;
-        var hpr = '';
-        if (defined(camera.heading)) {
-            hpr = ',' + CesiumMath.toDegrees(camera.heading) + ',' + CesiumMath.toDegrees(camera.pitch) + ',' + CesiumMath.toDegrees(camera.roll);
-        }
-        endUserOptions.view = CesiumMath.toDegrees(position.longitude) + ',' + CesiumMath.toDegrees(position.latitude) + ',' + position.height + hpr;
+        endUserOptions.view = CesiumMath.toDegrees(position.longitude) + ',' + CesiumMath.toDegrees(position.latitude) + ',' + position.height + ',' + CesiumMath.toDegrees(camera.heading) + ',' + CesiumMath.toDegrees(camera.pitch) + ',' + CesiumMath.toDegrees(camera.roll);
         history.replaceState(undefined, '', '?' + objectToQuery(endUserOptions));
     }
 

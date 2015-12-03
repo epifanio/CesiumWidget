@@ -2,13 +2,11 @@
 define([
         './defined',
         './defineProperties',
-        './DeveloperError',
-        './Math'
+        './DeveloperError'
     ], function(
         defined,
         defineProperties,
-        DeveloperError,
-        CesiumMath) {
+        DeveloperError) {
     "use strict";
 
     /**
@@ -70,16 +68,6 @@ define([
         },
 
         /**
-         * Gets a promise that resolves to true when the provider is ready for use.
-         * @memberof TerrainProvider.prototype
-         * @type {Promise.<Boolean>}
-         * @readonly
-         */
-        readyPromise : {
-            get : DeveloperError.throwInstantiationError
-        },
-
-        /**
          * Gets a value indicating whether or not the provider includes a water mask.  The water mask
          * indicates which areas of the globe are water rather than land, so they can be rendered
          * as a reflective surface with animated waves.  This function should not be
@@ -116,8 +104,8 @@ define([
      */
     TerrainProvider.getRegularGridIndices = function(width, height) {
         //>>includeStart('debug', pragmas.debug);
-        if (width * height >= CesiumMath.SIXTY_FOUR_KILOBYTES) {
-            throw new DeveloperError('The total number of vertices (width * height) must be less than 65536.');
+        if (width * height > 64 * 1024) {
+            throw new DeveloperError('The total number of vertices (width * height) must be less than or equal to 65536.');
         }
         //>>includeEnd('debug');
 
@@ -161,7 +149,6 @@ define([
      * {@link Globe.maximumScreenSpaceError} screen pixels and will probably go very slowly.
      * A value of 0.5 will cut the estimated level zero geometric error in half, allowing twice the
      * screen pixels between adjacent heightmap vertices and thus rendering more quickly.
-     * @type {Number}
      */
     TerrainProvider.heightmapTerrainQuality = 0.25;
 
@@ -189,7 +176,7 @@ define([
      * @param {Boolean} [throttleRequests=true] True if the number of simultaneous requests should be limited,
      *                  or false if the request should be initiated regardless of the number of requests
      *                  already in progress.
-     * @returns {Promise.<TerrainData>|undefined} A promise for the requested geometry.  If this method
+     * @returns {Promise|TerrainData} A promise for the requested geometry.  If this method
      *          returns undefined instead of a promise, it is an indication that too many requests are already
      *          pending and the request will be retried later.
      */

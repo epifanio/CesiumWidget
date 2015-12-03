@@ -3,21 +3,29 @@ define([
         '../ThirdParty/when',
         './defined',
         './DeveloperError',
-        './loadImage'
+        './loadImageViaBlob'
     ], function(
         when,
         defined,
         DeveloperError,
-        loadImage) {
+        loadImageViaBlob) {
     "use strict";
 
     /**
      * @private
      */
-    var loadImageFromTypedArray = function(uint8Array, format) {
+    var loadImageFromTypedArray = function(buffer, byteOffset, length, format) {
         //>>includeStart('debug', pragmas.debug);
-        if (!defined(uint8Array)) {
-            throw new DeveloperError('uint8Array is required.');
+        if (!defined(buffer)) {
+            throw new DeveloperError('buffer is required.');
+        }
+
+        if (!defined(byteOffset)) {
+            throw new DeveloperError('byteOffset is required.');
+        }
+
+        if (!defined(length)) {
+            throw new DeveloperError('length is required.');
         }
 
         if (!defined(format)) {
@@ -25,17 +33,15 @@ define([
         }
         //>>includeEnd('debug');
 
-        var blob = new Blob([uint8Array], {
+        var bytes = new Uint8Array(buffer, byteOffset, length);
+        var blob = new Blob([bytes], {
             type : format
         });
 
         var blobUrl = window.URL.createObjectURL(blob);
-        return loadImage(blobUrl, false).then(function(image) {
+        return loadImageViaBlob(blobUrl).then(function(image){
             window.URL.revokeObjectURL(blobUrl);
             return image;
-        }, function(error) {
-            window.URL.revokeObjectURL(blobUrl);
-            return when.reject(error);
         });
     };
 

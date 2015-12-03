@@ -8,24 +8,29 @@ define([
     /**
      * Style options for corners.
      *
-     * @demo The {@link http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Corridor.html&label=Geometries|Corridor Demo}
-     * demonstrates the three corner types, as used by {@link CorridorGraphics}.
-     *
      * @namespace
      * @alias CornerType
      */
     var CornerType = {
         /**
-         * <img src="images/CornerTypeRounded.png" style="vertical-align: middle;" width="186" height="189" />
+         * <pre>
+         *  _____
+         * (  ___
+         * | |
+         * </pre>
          *
-         * Corner has a smooth edge.
+         * Corner is circular.
          * @type {Number}
          * @constant
          */
         ROUNDED : 0,
 
         /**
-         * <img src="images/CornerTypeMitered.png" style="vertical-align: middle;" width="186" height="189" />
+         * <pre>
+         *  ______
+         * |  ____
+         * | |
+         * </pre>
          *
          * Corner point is the intersection of adjacent edges.
          * @type {Number}
@@ -34,7 +39,11 @@ define([
         MITERED : 1,
 
         /**
-         * <img src="images/CornerTypeBeveled.png" style="vertical-align: middle;" width="186" height="189" />
+         * <pre>
+         *  _____
+         * /  ___
+         * | |
+         * </pre>
          *
          * Corner is clipped.
          * @type {Number}

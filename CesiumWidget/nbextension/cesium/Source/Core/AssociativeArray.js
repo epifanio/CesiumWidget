@@ -117,7 +117,7 @@ define([
         if (hasValue) {
             var array = this._array;
             array.splice(array.indexOf(value), 1);
-            delete this._hash[key];
+            this._hash[key] = undefined;
         }
         return hasValue;
     };

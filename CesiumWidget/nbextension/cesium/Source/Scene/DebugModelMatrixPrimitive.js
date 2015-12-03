@@ -106,7 +106,7 @@ define([
     /**
      * @private
      */
-    DebugModelMatrixPrimitive.prototype.update = function(frameState) {
+    DebugModelMatrixPrimitive.prototype.update = function(context, frameState, commandList) {
         if (!this.show) {
             return;
         }
@@ -193,7 +193,7 @@ define([
             });
         }
 
-        this._primitive.update(frameState);
+        this._primitive.update(context, frameState, commandList);
     };
 
     /**

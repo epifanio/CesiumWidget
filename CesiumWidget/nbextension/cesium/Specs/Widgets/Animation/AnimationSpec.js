@@ -8,6 +8,7 @@ defineSuite([
         AnimationViewModel,
         ClockViewModel) {
     "use strict";
+    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn*/
 
     it('sanity check', function() {
         var clockViewModel = new ClockViewModel();

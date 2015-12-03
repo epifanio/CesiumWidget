@@ -98,7 +98,7 @@ define([
      * @example
      * function calculate(parameters, transferableObjects) {
      *   // perform whatever calculation is necessary.
-     *   var typedArray = new Float32Array(0);
+     *   var typedArray = new Float32Array();
      *
      *   // typed arrays are transferable
      *   transferableObjects.push(typedArray)

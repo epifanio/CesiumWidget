@@ -11,10 +11,6 @@ define([
      *
      * @exports defaultValue
      *
-     * @param {*} a
-     * @param {*} b
-     * @returns {*} Returns the first parameter if not undefined, otherwise the second parameter.
-     *
      * @example
      * param = Cesium.defaultValue(param, 'default');
      */

@@ -1,10 +1,8 @@
 /*global define*/
 define([
-        '../Core/freezeObject',
-        '../Renderer/WebGLConstants'
+        '../Core/freezeObject'
     ], function(
-        freezeObject,
-        WebGLConstants) {
+        freezeObject) {
     "use strict";
 
     /**
@@ -15,28 +13,28 @@ define([
      */
     var BlendEquation = {
         /**
-         * Pixel values are added componentwise.  This is used in additive blending for translucency.
+         * 0x8006.  Pixel values are added componentwise.  This is used in additive blending for translucency.
          *
          * @type {Number}
          * @constant
          */
-        ADD : WebGLConstants.FUNC_ADD,
+        ADD : 0x8006, // WebGL: FUNC_ADD
 
         /**
-         * Pixel values are subtracted componentwise (source - destination).  This is used in alpha blending for translucency.
+         * 0x800A.  Pixel values are subtracted componentwise (source - destination).  This is used in alpha blending for translucency.
          *
          * @type {Number}
          * @constant
          */
-        SUBTRACT : WebGLConstants.FUNC_SUBTRACT,
+        SUBTRACT : 0x800A, // WebGL: FUNC_SUBTRACT
 
         /**
-         * Pixel values are subtracted componentwise (destination - source).
+         * 0x800B.  Pixel values are subtracted componentwise (destination - source).
          *
          * @type {Number}
          * @constant
          */
-        REVERSE_SUBTRACT : WebGLConstants.FUNC_REVERSE_SUBTRACT
+        REVERSE_SUBTRACT : 0x800B // WebGL: FUNC_REVERSE_SUBTRACT
 
         // No min and max like in ColladaFX GLES2 profile
     };

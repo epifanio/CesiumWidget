@@ -52,6 +52,8 @@ define([
          * @type {RenderState}
          *
          * @default undefined
+         *
+         * @see Context#createRenderState
          */
         this.renderState = options.renderState;
 

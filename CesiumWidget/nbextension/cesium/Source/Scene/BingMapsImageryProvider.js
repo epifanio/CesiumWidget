@@ -8,10 +8,9 @@ define([
         '../Core/defineProperties',
         '../Core/DeveloperError',
         '../Core/Event',
-        '../Core/loadJsonp',
+        '../Core/jsonp',
         '../Core/Math',
         '../Core/Rectangle',
-        '../Core/RuntimeError',
         '../Core/TileProviderError',
         '../Core/WebMercatorTilingScheme',
         '../ThirdParty/when',
@@ -27,10 +26,9 @@ define([
         defineProperties,
         DeveloperError,
         Event,
-        loadJsonp,
+        jsonp,
         CesiumMath,
         Rectangle,
-        RuntimeError,
         TileProviderError,
         WebMercatorTilingScheme,
         when,
@@ -77,12 +75,10 @@ define([
      *
      * @see ArcGisMapServerImageryProvider
      * @see GoogleEarthImageryProvider
-     * @see createOpenStreetMapImageryProvider
+     * @see OpenStreetMapImageryProvider
      * @see SingleTileImageryProvider
      * @see TileMapServiceImageryProvider
      * @see WebMapServiceImageryProvider
-     * @see WebMapTileServiceImageryProvider
-     * @see UrlTemplateImageryProvider
      *
      * @see {@link http://msdn.microsoft.com/en-us/library/ff701713.aspx|Bing Maps REST Services}
      * @see {@link http://www.w3.org/TR/cors/|Cross-Origin Resource Sharing}
@@ -142,7 +138,6 @@ define([
         this._errorEvent = new Event();
 
         this._ready = false;
-        this._readyPromise = when.defer();
 
         var metadataUrl = this._url + '/REST/v1/Imagery/Metadata/' + this._mapStyle + '?incl=ImageryProviders&key=' + this._key;
         var that = this;
@@ -199,18 +194,16 @@ define([
             }
 
             that._ready = true;
-            that._readyPromise.resolve(true);
             TileProviderError.handleSuccess(metadataError);
         }
 
         function metadataFailure(e) {
             var message = 'An error occurred while accessing ' + metadataUrl + '.';
             metadataError = TileProviderError.handleError(metadataError, that, that._errorEvent, message, undefined, undefined, undefined, requestMetadata);
-            that._readyPromise.reject(new RuntimeError(message));
         }
 
         function requestMetadata() {
-            var metadata = loadJsonp(metadataUrl, {
+            var metadata = jsonp(metadataUrl, {
                 callbackParameterName : 'jsonp',
                 proxy : that._proxy
             });
@@ -447,18 +440,6 @@ define([
         },
 
         /**
-         * Gets a promise that resolves to true when the provider is ready for use.
-         * @memberof BingMapsImageryProvider.prototype
-         * @type {Promise.<Boolean>}
-         * @readonly
-         */
-        readyPromise : {
-            get : function() {
-                return this._readyPromise.promise;
-            }
-        },
-
-        /**
          * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
          * the source of the imagery.  This function should not be called before {@link BingMapsImageryProvider#ready} returns true.
          * @memberof BingMapsImageryProvider.prototype
@@ -516,7 +497,7 @@ define([
      * @param {Number} x The tile X coordinate.
      * @param {Number} y The tile Y coordinate.
      * @param {Number} level The tile level.
-     * @returns {Promise.<Image|Canvas>|undefined} A promise for the image that will resolve when the image is available, or
+     * @returns {Promise} A promise for the image that will resolve when the image is available, or
      *          undefined if there are too many active requests to the server, and the request
      *          should be retried later.  The resolved image may be either an
      *          Image or a Canvas DOM object.
@@ -543,7 +524,7 @@ define([
      * @param {Number} level The tile level.
      * @param {Number} longitude The longitude at which to pick features.
      * @param {Number} latitude  The latitude at which to pick features.
-     * @return {Promise.<ImageryLayerFeatureInfo[]>|undefined} A promise for the picked features that will resolve when the asynchronous
+     * @return {Promise} A promise for the picked features that will resolve when the asynchronous
      *                   picking completes.  The resolved value is an array of {@link ImageryLayerFeatureInfo}
      *                   instances.  The array may be empty if no features are found at the given location.
      *                   It may also be undefined if picking is not supported.

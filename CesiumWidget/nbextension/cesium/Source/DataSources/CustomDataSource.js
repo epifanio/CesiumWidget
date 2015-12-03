@@ -38,7 +38,7 @@ define([
         this._error = new Event();
         this._isLoading = false;
         this._loading = new Event();
-        this._entityCollection = new EntityCollection(this);
+        this._entityCollection = new EntityCollection();
     };
 
     defineProperties(CustomDataSource.prototype, {

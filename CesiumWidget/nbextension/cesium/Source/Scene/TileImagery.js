@@ -41,14 +41,14 @@ define([
      * Processes the load state machine for this instance.
      *
      * @param {Tile} tile The tile to which this instance belongs.
-     * @param {FrameState} frameState The frameState.
+     * @param {Context} context The context.
      * @returns {Boolean} True if this instance is done loading; otherwise, false.
      */
-    TileImagery.prototype.processStateMachine = function(tile, frameState) {
+    TileImagery.prototype.processStateMachine = function(tile, context) {
         var loadingImagery = this.loadingImagery;
         var imageryLayer = loadingImagery.imageryLayer;
 
-        loadingImagery.processStateMachine(frameState);
+        loadingImagery.processStateMachine(context);
 
         if (loadingImagery.state === ImageryState.READY) {
             if (defined(this.readyImagery)) {
@@ -90,7 +90,7 @@ define([
                 // Push the ancestor's load process along a bit.  This is necessary because some ancestor imagery
                 // tiles may not be attached directly to a terrain tile.  Such tiles will never load if
                 // we don't do it here.
-                closestAncestorThatNeedsLoading.processStateMachine(frameState);
+                closestAncestorThatNeedsLoading.processStateMachine(context);
                 return false; // not done loading
             } else {
                 // This imagery tile is failed or invalid, and we have the "best available" substitute.

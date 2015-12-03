@@ -12,6 +12,7 @@ defineSuite([
         ColorMaterialProperty,
         ImageMaterialProperty) {
     "use strict";
+    /*global it,expect*/
 
     var MockGraphics = function() {
         this._definitionChanged = new Event();

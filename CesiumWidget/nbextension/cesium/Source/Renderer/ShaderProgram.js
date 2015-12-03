@@ -1,29 +1,24 @@
 /*global define*/
 define([
-        '../Core/defaultValue',
         '../Core/defined',
-        '../Core/definedNotNull',
         '../Core/defineProperties',
         '../Core/destroyObject',
         '../Core/DeveloperError',
         '../Core/RuntimeError',
         './AutomaticUniforms',
-        './ContextLimits',
         './createUniform',
         './createUniformArray'
     ], function(
-        defaultValue,
         defined,
-        definedNotNull,
         defineProperties,
         destroyObject,
         DeveloperError,
         RuntimeError,
         AutomaticUniforms,
-        ContextLimits,
         createUniform,
         createUniformArray) {
     "use strict";
+    /*global console*/
 
     var nextShaderProgramId = 0;
 
@@ -31,8 +26,6 @@ define([
      * @private
      */
     var ShaderProgram = function(options) {
-        var modifiedFS = handleUniformPrecisionMismatches(options.vertexShaderText, options.fragmentShaderText);
-
         this._gl = options.gl;
         this._logShaderCompilation = options.logShaderCompilation;
         this._debugShaders = options.debugShaders;
@@ -45,7 +38,6 @@ define([
         this._uniforms = undefined;
         this._automaticUniforms = undefined;
         this._manualUniforms = undefined;
-        this._duplicateUniformNames = modifiedFS.duplicateUniformNames;
         this._cachedShader = undefined; // Used by ShaderCache
 
         /**
@@ -56,36 +48,12 @@ define([
         this._vertexShaderSource = options.vertexShaderSource;
         this._vertexShaderText = options.vertexShaderText;
         this._fragmentShaderSource = options.fragmentShaderSource;
-        this._fragmentShaderText = modifiedFS.fragmentShaderText;
+        this._fragmentShaderText = options.fragmentShaderText;
 
         /**
          * @private
          */
         this.id = nextShaderProgramId++;
-    };
-
-    ShaderProgram.fromCache = function(options) {
-        options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(options.context)) {
-            throw new DeveloperError('options.context is required.');
-        }
-        //>>includeEnd('debug');
-
-        return options.context.shaderCache.getShaderProgram(options);
-    };
-
-    ShaderProgram.replaceCache = function(options) {
-        options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-
-        //>>includeStart('debug', pragmas.debug);
-        if (!defined(options.context)) {
-            throw new DeveloperError('options.context is required.');
-        }
-        //>>includeEnd('debug');
-
-        return options.context.shaderCache.replaceShaderProgram(options);
     };
 
     defineProperties(ShaderProgram.prototype, {
@@ -132,55 +100,6 @@ define([
             }
         }
     });
-
-    function extractUniforms(shaderText) {
-        var uniformNames = [];
-        var uniformLines = shaderText.match(/uniform.*?(?![^{]*})(?=[=\[;])/g);
-        if (definedNotNull(uniformLines)) {
-            var len = uniformLines.length;
-            for (var i = 0; i < len; i++) {
-                var line = uniformLines[i].trim();
-                var name = line.slice(line.lastIndexOf(' ') + 1);
-                uniformNames.push(name);
-            }
-        }
-        return uniformNames;
-    }
-
-    function handleUniformPrecisionMismatches(vertexShaderText, fragmentShaderText) {
-        // If a uniform exists in both the vertex and fragment shader but with different precision qualifiers,
-        // give the fragment shader uniform a different name. This fixes shader compilation errors on devices
-        // that only support mediump in the fragment shader.
-        var duplicateUniformNames = {};
-
-        if (!ContextLimits.highpFloatSupported || !ContextLimits.highpIntSupported) {
-            var i, j;
-            var uniformName;
-            var duplicateName;
-            var vertexShaderUniforms = extractUniforms(vertexShaderText);
-            var fragmentShaderUniforms = extractUniforms(fragmentShaderText);
-            var vertexUniformsCount = vertexShaderUniforms.length;
-            var fragmentUniformsCount = fragmentShaderUniforms.length;
-
-            for (i = 0; i < vertexUniformsCount; i++) {
-                for (j = 0; j < fragmentUniformsCount; j++) {
-                    if (vertexShaderUniforms[i] === fragmentShaderUniforms[j]) {
-                        uniformName = vertexShaderUniforms[i];
-                        duplicateName = 'czm_mediump_' + uniformName;
-                        // Update fragmentShaderText with renamed uniforms
-                        var re = new RegExp(uniformName + '\\b', 'g');
-                        fragmentShaderText = fragmentShaderText.replace(re, duplicateName);
-                        duplicateUniformNames[duplicateName] = uniformName;
-                    }
-                }
-            }
-        }
-
-        return {
-            fragmentShaderText : fragmentShaderText,
-            duplicateUniformNames : duplicateUniformNames
-        };
-    }
 
     var consolePrefix = '[Cesium WebGL] ';
 
@@ -401,28 +320,20 @@ define([
         };
     }
 
-    function partitionUniforms(shader, uniforms) {
+    function partitionUniforms(uniforms) {
         var automaticUniforms = [];
         var manualUniforms = [];
 
-        for (var uniform in uniforms) {
+        for ( var uniform in uniforms) {
             if (uniforms.hasOwnProperty(uniform)) {
-                var uniformObject = uniforms[uniform];
-                var uniformName = uniform;
-                // if it's a duplicate uniform, use its original name so it is updated correctly
-                var duplicateUniform = shader._duplicateUniformNames[uniformName];
-                if (defined(duplicateUniform)) {
-                    uniformObject.name = duplicateUniform;
-                    uniformName = duplicateUniform;
-                }
-                var automaticUniform = AutomaticUniforms[uniformName];
-                if (defined(automaticUniform)) {
+                var automaticUniform = AutomaticUniforms[uniform];
+                if (automaticUniform) {
                     automaticUniforms.push({
-                        uniform : uniformObject,
+                        uniform : uniforms[uniform],
                         automaticUniform : automaticUniform
                     });
                 } else {
-                    manualUniforms.push(uniformObject);
+                    manualUniforms.push(uniforms[uniform]);
                 }
             }
         }
@@ -456,7 +367,7 @@ define([
         var program = createAndLinkProgram(gl, shader, shader._debugShaders);
         var numberOfVertexAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
         var uniforms = findUniforms(gl, program);
-        var partitionedUniforms = partitionUniforms(shader, uniforms.uniformsByName);
+        var partitionedUniforms = partitionUniforms(uniforms.uniformsByName);
 
         shader._program = program;
         shader._numberOfVertexAttributes = numberOfVertexAttributes;

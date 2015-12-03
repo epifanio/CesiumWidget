@@ -126,6 +126,7 @@ define([
         if (event.numberOfListeners > 0) {
             event.raiseEvent(error);
         } else {
+            /*global console*/
             console.log('An error occurred in "' + provider.constructor.name + '": ' + formatError(message));
         }
 

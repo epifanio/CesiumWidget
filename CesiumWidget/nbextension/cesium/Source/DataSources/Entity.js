@@ -90,7 +90,6 @@ define([
      * @param {Object} [options] Object with the following properties:
      * @param {String} [options.id] A unique identifier for this object. If none is provided, a GUID is generated.
      * @param {String} [options.name] A human readable name to display to users. It does not have to be unique.
-     * @param {TimeIntervalCollection} [options.availability] The availability, if any, associated with this object.
      * @param {Boolean} [options.show] A boolean value indicating if the entity and its children are displayed.
      * @param {Property} [options.description] A string Property specifying an HTML description for this entity.
      * @param {PositionProperty} [options.position] A Property specifying the entity position.
@@ -172,12 +171,6 @@ define([
         this._wall = undefined;
         this._wallSubscription = undefined;
         this._children = [];
-
-        /**
-         * Gets or sets the entity collection that this entity belongs to.
-         * @type {EntityCollection}
-         */
-        this.entityCollection = undefined;
 
         this.parent = options.parent;
         this.merge(options);
@@ -303,9 +296,7 @@ define([
                 }
 
                 this._parent = value;
-                if (defined(value)) {
-                    value._children.push(this);
-                }
+                value._children.push(this);
 
                 var isShowing = this.isShowing;
 
@@ -447,7 +438,7 @@ define([
      * Given a time, returns true if this object should have data during that time.
      *
      * @param {JulianDate} time The time to check availability for.
-     * @returns {Boolean} true if the object should have data during the provided time, false otherwise.
+     * @returns true if the object should have data during the provided time, false otherwise.
      */
     Entity.prototype.isAvailable = function(time) {
         //>>includeStart('debug', pragmas.debug);

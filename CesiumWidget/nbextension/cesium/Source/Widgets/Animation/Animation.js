@@ -284,7 +284,7 @@ define([
 
     /**
      * <span style="display: block; text-align: center;">
-     * <img src="images/AnimationWidget.png" width="211" height="142" alt="" />
+     * <img src="images/AnimationWidget.png" width="211" height="142" alt="" style="border: none; border-radius: 5px;" />
      * <br />Animation widget
      * </span>
      * <br /><br />
@@ -575,7 +575,6 @@ define([
          *
          * @memberof Animation.prototype
          * @type {Element}
-         * @readonly
          */
         container : {
             get : function() {
@@ -588,7 +587,6 @@ define([
          *
          * @memberof Animation.prototype
          * @type {AnimationViewModel}
-         * @readonly
          */
         viewModel : {
             get : function() {

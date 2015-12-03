@@ -1,8 +1,5 @@
 /*global define*/
-define([
-        '../Core/defineProperties'
-    ], function(
-        defineProperties) {
+define(function() {
     "use strict";
 
     /**
@@ -14,24 +11,12 @@ define([
     var Queue = function() {
         this._array = [];
         this._offset = 0;
-        this._length = 0;
-    };
 
-    defineProperties(Queue.prototype, {
         /**
          * The length of the queue.
-         *
-         * @memberof Queue.prototype
-         *
-         * @type {Number}
-         * @readonly
          */
-        length : {
-            get : function() {
-                return this._length;
-            }
-        }
-    });
+        this.length = 0;
+    };
 
     /**
      * Enqueues the specified item.
@@ -40,16 +25,14 @@ define([
      */
     Queue.prototype.enqueue = function(item) {
         this._array.push(item);
-        this._length++;
+        this.length++;
     };
 
     /**
      * Dequeues an item.  Returns undefined if the queue is empty.
-     *
-     * @returns {Object} The the dequeued item.
      */
     Queue.prototype.dequeue = function() {
-        if (this._length === 0) {
+        if (this.length === 0) {
             return undefined;
         }
 
@@ -59,35 +42,22 @@ define([
         array[offset] = undefined;
 
         offset++;
-        if ((offset > 10) && (offset * 2 > array.length)) {
+        if (offset > 10 && offset * 2 > array.length) {
             //compact array
             this._array = array.slice(offset);
             offset = 0;
         }
 
         this._offset = offset;
-        this._length--;
+        this.length--;
 
         return item;
     };
 
     /**
-     * Returns the item at the front of the queue.  Returns undefined if the queue is empty.
-     *
-     * @returns {Object} The item at the front of the queue.
-     */
-    Queue.prototype.peek = function() {
-        if (this._length === 0) {
-            return undefined;
-        }
-
-        return this._array[this._offset];
-    };
-
-    /**
      * Check whether this queue contains the specified item.
      *
-     * @param {Object} item The item to search for.
+     * @param {Object} item the item to search for.
      */
     Queue.prototype.contains = function(item) {
         return this._array.indexOf(item) !== -1;
@@ -97,7 +67,7 @@ define([
      * Remove all items from the queue.
      */
     Queue.prototype.clear = function() {
-        this._array.length = this._offset = this._length = 0;
+        this._array.length = this._offset = this.length = 0;
     };
 
     /**

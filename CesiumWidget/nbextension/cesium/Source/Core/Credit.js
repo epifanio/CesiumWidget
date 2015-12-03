@@ -66,7 +66,6 @@ define([
          * The credit text
          * @memberof Credit.prototype
          * @type {String}
-         * @readonly
          */
         text : {
             get : function() {
@@ -78,7 +77,6 @@ define([
          * The source location for the image.
          * @memberof Credit.prototype
          * @type {String}
-         * @readonly
          */
         imageUrl : {
             get : function() {
@@ -90,7 +88,6 @@ define([
          * A URL location for the credit hyperlink
          * @memberof Credit.prototype
          * @type {String}
-         * @readonly
          */
         link : {
             get : function() {
@@ -101,7 +98,6 @@ define([
         /**
          * @memberof Credit.prototype
          * @type {Number}
-         * @readonly
          *
          * @private
          */

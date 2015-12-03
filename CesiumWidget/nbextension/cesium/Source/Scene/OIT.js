@@ -5,13 +5,9 @@ define([
         '../Core/destroyObject',
         '../Core/PixelFormat',
         '../Renderer/ClearCommand',
-        '../Renderer/Framebuffer',
         '../Renderer/PixelDatatype',
         '../Renderer/RenderState',
-        '../Renderer/ShaderProgram',
         '../Renderer/ShaderSource',
-        '../Renderer/Texture',
-        '../Renderer/WebGLConstants',
         '../Shaders/AdjustTranslucentFS',
         '../Shaders/CompositeOITFS',
         './BlendEquation',
@@ -22,18 +18,15 @@ define([
         destroyObject,
         PixelFormat,
         ClearCommand,
-        Framebuffer,
         PixelDatatype,
         RenderState,
-        ShaderProgram,
         ShaderSource,
-        Texture,
-        WebGLConstants,
         AdjustTranslucentFS,
         CompositeOITFS,
         BlendEquation,
         BlendFunction) {
     "use strict";
+    /*global WebGLRenderingContext*/
 
     /**
      * @private
@@ -106,15 +99,13 @@ define([
     function updateTextures(oit, context, width, height) {
         destroyTextures(oit);
 
-        oit._accumulationTexture = new Texture({
-            context : context,
+        oit._accumulationTexture = context.createTexture2D({
             width : width,
             height : height,
             pixelFormat : PixelFormat.RGBA,
             pixelDatatype : PixelDatatype.FLOAT
         });
-        oit._revealageTexture = new Texture({
-            context : context,
+        oit._revealageTexture = context.createTexture2D({
             width : width,
             height : height,
             pixelFormat : PixelFormat.RGBA,
@@ -125,19 +116,17 @@ define([
     function updateFramebuffers(oit, context) {
         destroyFramebuffers(oit);
 
-        var completeFBO = WebGLConstants.FRAMEBUFFER_COMPLETE;
+        var completeFBO = WebGLRenderingContext.FRAMEBUFFER_COMPLETE;
         var supported = true;
 
         // if MRT is supported, attempt to make an FBO with multiple color attachments
         if (oit._translucentMRTSupport) {
-            oit._translucentFBO = new Framebuffer({
-                context : context,
+            oit._translucentFBO = context.createFramebuffer({
                 colorTextures : [oit._accumulationTexture, oit._revealageTexture],
                 depthStencilTexture : oit._depthStencilTexture,
                 destroyAttachments : false
             });
-            oit._adjustTranslucentFBO = new Framebuffer({
-                context : context,
+            oit._adjustTranslucentFBO = context.createFramebuffer({
                 colorTextures : [oit._accumulationTexture, oit._revealageTexture],
                 destroyAttachments : false
             });
@@ -150,25 +139,21 @@ define([
 
         // either MRT isn't supported or FBO creation failed, attempt multipass
         if (!oit._translucentMRTSupport) {
-            oit._translucentFBO = new Framebuffer({
-                context : context,
+            oit._translucentFBO = context.createFramebuffer({
                 colorTextures : [oit._accumulationTexture],
                 depthStencilTexture : oit._depthStencilTexture,
                 destroyAttachments : false
             });
-            oit._alphaFBO = new Framebuffer({
-                context : context,
+            oit._alphaFBO = context.createFramebuffer({
                 colorTextures : [oit._revealageTexture],
                 depthStencilTexture : oit._depthStencilTexture,
                 destroyAttachments : false
             });
-            oit._adjustTranslucentFBO = new Framebuffer({
-                context : context,
+            oit._adjustTranslucentFBO = context.createFramebuffer({
                 colorTextures : [oit._accumulationTexture],
                 destroyAttachments : false
             });
-            oit._adjustAlphaFBO = new Framebuffer({
-                context : context,
+            oit._adjustAlphaFBO = context.createFramebuffer({
                 colorTextures : [oit._revealageTexture],
                 destroyAttachments : false
             });
@@ -236,7 +221,7 @@ define([
                 }
             };
             this._compositeCommand = context.createViewportQuadCommand(fs, {
-                renderState : RenderState.fromCache(),
+                renderState : context.createRenderState(),
                 uniformMap : uniformMap,
                 owner : this
             });
@@ -259,7 +244,7 @@ define([
                 };
 
                 this._adjustTranslucentCommand = context.createViewportQuadCommand(fs, {
-                    renderState : RenderState.fromCache(),
+                    renderState : context.createRenderState(),
                     uniformMap : uniformMap,
                     owner : this
                 });
@@ -278,7 +263,7 @@ define([
                 };
 
                 this._adjustTranslucentCommand = context.createViewportQuadCommand(fs, {
-                    renderState : RenderState.fromCache(),
+                    renderState : context.createRenderState(),
                     uniformMap : uniformMap,
                     owner : this
                 });
@@ -293,7 +278,7 @@ define([
                 };
 
                 this._adjustAlphaCommand = context.createViewportQuadCommand(fs, {
-                    renderState : RenderState.fromCache(),
+                    renderState : context.createRenderState(),
                     uniformMap : uniformMap,
                     owner : this
                 });
@@ -337,11 +322,11 @@ define([
     function getTranslucentRenderState(context, translucentBlending, cache, renderState) {
         var translucentState = cache[renderState.id];
         if (!defined(translucentState)) {
-            var rs = RenderState.getState(renderState);
+            var rs = RenderState.clone(renderState);
             rs.depthMask = false;
             rs.blending = translucentBlending;
 
-            translucentState = RenderState.fromCache(rs);
+            translucentState = context.createRenderState(rs);
             cache[renderState.id] = translucentState;
         }
 
@@ -386,7 +371,7 @@ define([
             var fs = shaderProgram.fragmentShaderSource.clone();
 
             fs.sources = fs.sources.map(function(source) {
-                source = ShaderSource.replaceMain(source, 'czm_translucent_main');
+                source = source.replace(/void\s+main\s*\(\s*(?:void)?\s*\)/g, 'void czm_translucent_main()');
                 source = source.replace(/gl_FragColor/g, 'czm_gl_FragColor');
                 source = source.replace(/\bdiscard\b/g, 'czm_discard = true');
                 source = source.replace(/czm_phong/g, 'czm_translucentPhong');
@@ -412,13 +397,7 @@ define([
                     source +
                     '}\n');
 
-            shader = ShaderProgram.fromCache({
-                context : context,
-                vertexShaderSource : shaderProgram.vertexShaderSource,
-                fragmentShaderSource : fs,
-                attributeLocations : attributeLocations
-            });
-
+            shader = context.createShaderProgram(shaderProgram.vertexShaderSource, fs, attributeLocations);
             cache[id] = shader;
         }
 

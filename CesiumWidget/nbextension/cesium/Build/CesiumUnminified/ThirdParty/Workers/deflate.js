@@ -20,6 +20,7 @@
  * Portions licensed separately.
  * See https://github.com/AnalyticalGraphicsInc/cesium/blob/master/LICENSE.md for full licensing details.
  */
+
 /*
  Copyright (c) 2013 Gildas Lormeau. All rights reserved.
 
@@ -2108,4 +2109,3 @@
 	}
 
 })(this);
-

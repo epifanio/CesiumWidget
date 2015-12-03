@@ -4,24 +4,20 @@ define([
         '../Core/defaultValue',
         '../Core/defined',
         '../Core/defineProperties',
-        '../Core/deprecationWarning',
         '../Core/DeveloperError',
         '../Core/Event',
         '../Core/Rectangle',
         '../Core/WebMercatorTilingScheme',
-        '../ThirdParty/when',
         './ImageryProvider'
     ], function(
         Credit,
         defaultValue,
         defined,
         defineProperties,
-        deprecationWarning,
         DeveloperError,
         Event,
         Rectangle,
         WebMercatorTilingScheme,
-        when,
         ImageryProvider) {
     "use strict";
 
@@ -43,18 +39,15 @@ define([
      * @param {Object} [options.proxy] A proxy to use for requests. This object is expected to have a getURL function which returns the proxied URL.
      * @param {Rectangle} [options.rectangle=Rectangle.MAX_VALUE] The rectangle of the layer.
      * @param {Number} [options.minimumLevel=0] The minimum level-of-detail supported by the imagery provider.
-     * @param {Number} [options.maximumLevel] The maximum level-of-detail supported by the imagery provider, or undefined if there is no limit.
+     * @param {Number} [options.maximumLevel=18] The maximum level-of-detail supported by the imagery provider.
      * @param {Ellipsoid} [options.ellipsoid] The ellipsoid.  If not specified, the WGS84 ellipsoid is used.
      * @param {Credit|String} [options.credit='MapQuest, Open Street Map and contributors, CC-BY-SA'] A credit for the data source, which is displayed on the canvas.
      *
      * @see ArcGisMapServerImageryProvider
      * @see BingMapsImageryProvider
-     * @see GoogleEarthImageryProvider
      * @see SingleTileImageryProvider
      * @see TileMapServiceImageryProvider
      * @see WebMapServiceImageryProvider
-     * @see WebMapTileServiceImageryProvider
-     * @see UrlTemplateImageryProvider
      *
      * @see {@link http://wiki.openstreetmap.org/wiki/Main_Page|OpenStreetMap Wiki}
      * @see {@link http://www.w3.org/TR/cors/|Cross-Origin Resource Sharing}
@@ -64,11 +57,8 @@ define([
      * var osm = new Cesium.OpenStreetMapImageryProvider({
      *     url : '//a.tile.openstreetmap.org/'
      * });
-     * 
-     * @deprecated
      */
     var OpenStreetMapImageryProvider = function OpenStreetMapImageryProvider(options) {
-        deprecationWarning('OpenStreetMapImageryProvider', 'OpenStreetMapImageryProvider is deprecated. It will be removed in Cesium 1.18. Use createOpenStreetMapImageryProvider instead.');
         options = defaultValue(options, {});
 
         var url = defaultValue(options.url, '//a.tile.openstreetmap.org/');
@@ -88,7 +78,7 @@ define([
         this._tileHeight = 256;
 
         this._minimumLevel = defaultValue(options.minimumLevel, 0);
-        this._maximumLevel = options.maximumLevel;
+        this._maximumLevel = defaultValue(options.maximumLevel, 18);
 
         this._rectangle = defaultValue(options.rectangle, this._tilingScheme.rectangle);
 
@@ -105,7 +95,6 @@ define([
         this._errorEvent = new Event();
 
         this._ready = true;
-        this._readyPromise = when.resolve(true);
 
         var credit = defaultValue(options.credit, defaultCredit);
         if (typeof credit === 'string') {
@@ -312,18 +301,6 @@ define([
         },
 
         /**
-         * Gets a promise that resolves to true when the provider is ready for use.
-         * @memberof OpenStreetMapImageryProvider.prototype
-         * @type {Boolean}
-         * @readonly
-         */
-        readyPromise : {
-            get : function() {
-                return this._readyPromise;
-            }
-        },
-
-        /**
          * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
          * the source of the imagery.  This function should not be called before {@link OpenStreetMapImageryProvider#ready} returns true.
          * @memberof OpenStreetMapImageryProvider.prototype
@@ -374,7 +351,7 @@ define([
      * @param {Number} x The tile X coordinate.
      * @param {Number} y The tile Y coordinate.
      * @param {Number} level The tile level.
-     * @returns {Promise.<Image|Canvas>|undefined} A promise for the image that will resolve when the image is available, or
+     * @returns {Promise} A promise for the image that will resolve when the image is available, or
      *          undefined if there are too many active requests to the server, and the request
      *          should be retried later.  The resolved image may be either an
      *          Image or a Canvas DOM object.
@@ -401,7 +378,7 @@ define([
      * @param {Number} level The tile level.
      * @param {Number} longitude The longitude at which to pick features.
      * @param {Number} latitude  The latitude at which to pick features.
-     * @return {Promise.<ImageryLayerFeatureInfo[]>|undefined} A promise for the picked features that will resolve when the asynchronous
+     * @return {Promise} A promise for the picked features that will resolve when the asynchronous
      *                   picking completes.  The resolved value is an array of {@link ImageryLayerFeatureInfo}
      *                   instances.  The array may be empty if no features are found at the given location.
      *                   It may also be undefined if picking is not supported.

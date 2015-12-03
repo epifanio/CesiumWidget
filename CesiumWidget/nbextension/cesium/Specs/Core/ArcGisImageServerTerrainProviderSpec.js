@@ -24,6 +24,7 @@ defineSuite([
         Uri,
         when) {
     "use strict";
+    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn*/
 
     afterEach(function() {
         loadImage.createImage = loadImage.defaultCreateImage;
@@ -41,17 +42,6 @@ defineSuite([
         expect(function() {
             return new ArcGisImageServerTerrainProvider({});
         }).toThrowDeveloperError();
-    });
-
-    it('resolves readyPromise', function() {
-        var provider = new ArcGisImageServerTerrainProvider({
-            url : 'made/up/url'
-        });
-
-        return provider.readyPromise.then(function (result) {
-            expect(result).toBe(true);
-            expect(provider.ready).toBe(true);
-        });
     });
 
     it('uses geographic tiling scheme by default', function() {
@@ -186,6 +176,7 @@ defineSuite([
 
             spyOn(loadImage, 'createImage').and.callFake(function(url, crossOrigin, deferred) {
                 var uri = new Uri(url);
+                var params = queryToObject(uri.query);
 
                 expect(uri.path).toEqual('/proxy/');
 

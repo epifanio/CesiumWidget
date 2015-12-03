@@ -562,13 +562,11 @@ define([
     /**
      * @private
      */
-    LabelCollection.prototype.update = function(frameState) {
+    LabelCollection.prototype.update = function(context, frameState, commandList) {
         var billboardCollection = this._billboardCollection;
 
         billboardCollection.modelMatrix = this.modelMatrix;
         billboardCollection.debugShowBoundingVolume = this.debugShowBoundingVolume;
-
-        var context = frameState.context;
 
         if (!defined(this._textureAtlas)) {
             this._textureAtlas = new TextureAtlas({
@@ -613,7 +611,7 @@ define([
         }
 
         this._labelsToUpdate.length = 0;
-        billboardCollection.update(frameState);
+        billboardCollection.update(context, frameState, commandList);
     };
 
     /**

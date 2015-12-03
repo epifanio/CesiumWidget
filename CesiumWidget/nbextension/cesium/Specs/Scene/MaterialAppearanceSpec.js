@@ -28,6 +28,7 @@ defineSuite([
         createFrameState,
         render) {
     "use strict";
+    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn*/
 
     var context;
     var frameState;
@@ -36,14 +37,11 @@ defineSuite([
 
     beforeAll(function() {
         context = createContext();
-    });
-
-    beforeEach(function() {
-        frameState = createFrameState(context);
+        frameState = createFrameState();
 
         frameState.camera.viewRectangle(rectangle);
         var us = context.uniformState;
-        us.update(frameState);
+        us.update(context, frameState);
     });
 
     afterAll(function() {
@@ -95,7 +93,7 @@ defineSuite([
         ClearCommand.ALL.execute(context);
         expect(context.readPixels()).toEqual([0, 0, 0, 0]);
 
-        render(frameState, primitive);
+        render(context, frameState, primitive);
         expect(context.readPixels()).not.toEqual([0, 0, 0, 0]);
     });
 
@@ -111,7 +109,7 @@ defineSuite([
         ClearCommand.ALL.execute(context);
         expect(context.readPixels()).toEqual([0, 0, 0, 0]);
 
-        render(frameState, primitive);
+        render(context, frameState, primitive);
         expect(context.readPixels()).not.toEqual([0, 0, 0, 0]);
     });
 
@@ -127,7 +125,7 @@ defineSuite([
         ClearCommand.ALL.execute(context);
         expect(context.readPixels()).toEqual([0, 0, 0, 0]);
 
-        render(frameState, primitive);
+        render(context, frameState, primitive);
         expect(context.readPixels()).not.toEqual([0, 0, 0, 0]);
     });
 

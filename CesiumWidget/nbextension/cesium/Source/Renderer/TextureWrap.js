@@ -1,19 +1,17 @@
 /*global define*/
 define([
-        '../Core/freezeObject',
-        './WebGLConstants'
+        '../Core/freezeObject'
     ], function(
-        freezeObject,
-        WebGLConstants) {
+        freezeObject) {
     "use strict";
 
     /**
      * @private
      */
     var TextureWrap = {
-        CLAMP_TO_EDGE : WebGLConstants.CLAMP_TO_EDGE,
-        REPEAT : WebGLConstants.REPEAT,
-        MIRRORED_REPEAT : WebGLConstants.MIRRORED_REPEAT,
+        CLAMP_TO_EDGE : 0x812F,
+        REPEAT : 0x2901,
+        MIRRORED_REPEAT : 0x8370,
 
         validate : function(textureWrap) {
             return ((textureWrap === TextureWrap.CLAMP_TO_EDGE) ||

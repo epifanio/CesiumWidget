@@ -14,6 +14,7 @@ defineSuite([
         PrimitiveType,
         VertexFormat) {
     "use strict";
+    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn*/
 
 
     it('computes all attributes', function() {

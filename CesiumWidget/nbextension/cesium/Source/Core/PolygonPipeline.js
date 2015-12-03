@@ -12,7 +12,6 @@ define([
         './GeometryAttribute',
         './Math',
         './pointInsideTriangle',
-        './PolylinePipeline',
         './PrimitiveType',
         './Queue',
         './WindingOrder'
@@ -29,7 +28,6 @@ define([
         GeometryAttribute,
         CesiumMath,
         pointInsideTriangle,
-        PolylinePipeline,
         PrimitiveType,
         Queue,
         WindingOrder) {
@@ -547,6 +545,7 @@ define([
      *
      * @private
      */
+    var intersectionScratch = new Cartesian2();
     var aDirectionScratch = new Cartesian2();
     var bDirectionScratch = new Cartesian2();
 
@@ -719,10 +718,17 @@ define([
         }
         //>>includeEnd('debug');
 
-        var cleanedPositions = PolylinePipeline.removeDuplicates(positions);
-        if (Cartesian3.equals(cleanedPositions[0], cleanedPositions[cleanedPositions.length - 1])) {
-            return cleanedPositions.slice(1);
+        var length = positions.length;
+        var cleanedPositions = [];
+        for ( var i0 = length - 1, i1 = 0; i1 < length; i0 = i1++) {
+            var v0 = positions[i0];
+            var v1 = positions[i1];
+
+            if (!Cartesian3.equals(v0, v1)) {
+                cleanedPositions.push(v1); // Shallow copy!
+            }
         }
+
         return cleanedPositions;
     };
 
@@ -998,7 +1004,7 @@ define([
      *
      * @param {Cartesian2[]} outerRing An array of Cartesian points defining the outer boundary of the polygon.
      * @param {Cartesian2[]} innerRings An array of arrays of Cartesian points, where each array represents a hole in the polygon.
-     * @returns {Cartesian2[]} A single list of Cartesian points defining the polygon, including the eliminated inner ring.
+     * @returns A single list of Cartesian points defining the polygon, including the eliminated inner ring.
      *
      * @exception {DeveloperError} <code>outerRing</code> must not be empty.
      *

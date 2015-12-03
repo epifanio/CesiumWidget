@@ -15,17 +15,14 @@ define([
         '../Core/Matrix4',
         '../Core/PrimitiveType',
         '../Renderer/BufferUsage',
-        '../Renderer/ContextLimits',
         '../Renderer/DrawCommand',
-        '../Renderer/RenderState',
-        '../Renderer/ShaderProgram',
         '../Renderer/ShaderSource',
         '../Renderer/VertexArrayFacade',
         '../Shaders/PointPrimitiveCollectionFS',
         '../Shaders/PointPrimitiveCollectionVS',
+        './PointPrimitive',
         './BlendingState',
         './Pass',
-        './PointPrimitive',
         './SceneMode'
     ], function(
         BoundingSphere,
@@ -43,17 +40,14 @@ define([
         Matrix4,
         PrimitiveType,
         BufferUsage,
-        ContextLimits,
         DrawCommand,
-        RenderState,
-        ShaderProgram,
         ShaderSource,
         VertexArrayFacade,
         PointPrimitiveCollectionFS,
         PointPrimitiveCollectionVS,
+        PointPrimitive,
         BlendingState,
         Pass,
-        PointPrimitive,
         SceneMode) {
     "use strict";
 
@@ -657,9 +651,23 @@ define([
         }
     }
 
-    function updateBoundingVolume(collection, frameState, boundingVolume) {
-        var pixelSize = frameState.camera.getPixelSize(boundingVolume, frameState.context.drawingBufferWidth, frameState.context.drawingBufferHeight);
-        var size = pixelSize * collection._maxPixelSize;
+    var scratchDrawingBufferDimensions = new Cartesian2();
+    var scratchToCenter = new Cartesian3();
+    var scratchProj = new Cartesian3();
+    function updateBoundingVolume(collection, context, frameState, boundingVolume) {
+        var camera = frameState.camera;
+        var frustum = camera.frustum;
+
+        var toCenter = Cartesian3.subtract(camera.positionWC, boundingVolume.center, scratchToCenter);
+        var proj = Cartesian3.multiplyByScalar(camera.directionWC, Cartesian3.dot(toCenter, camera.directionWC), scratchProj);
+        var distance = Math.max(0.0, Cartesian3.magnitude(proj) - boundingVolume.radius);
+
+        scratchDrawingBufferDimensions.x = context.drawingBufferWidth;
+        scratchDrawingBufferDimensions.y = context.drawingBufferHeight;
+        var pixelSize = frustum.getPixelSize(scratchDrawingBufferDimensions, distance);
+        var pixelScale = Math.max(pixelSize.x, pixelSize.y);
+
+        var size = pixelScale * collection._maxPixelSize;
         boundingVolume.radius += size;
     }
 
@@ -668,10 +676,10 @@ define([
     /**
      * @private
      */
-    PointPrimitiveCollection.prototype.update = function(frameState) {
+    PointPrimitiveCollection.prototype.update = function(context, frameState, commandList) {
         removePointPrimitives(this);
 
-        this._maxTotalPointSize = ContextLimits.maximumAliasedPointSize;
+        this._maxTotalPointSize = context.maximumAliasedPointSize;
 
         updateMode(this, frameState);
 
@@ -685,7 +693,6 @@ define([
         var createVertexArray = this._createVertexArray;
 
         var vafWriters;
-        var context = frameState.context;
         var pass = frameState.passes;
         var picking = pass.pick;
 
@@ -796,7 +803,7 @@ define([
         } else {
             boundingVolume = BoundingSphere.clone(this._baseVolume2D, this._boundingVolume);
         }
-        updateBoundingVolume(this, frameState, boundingVolume);
+        updateBoundingVolume(this, context, frameState, boundingVolume);
 
         var va;
         var vaLength;
@@ -805,13 +812,11 @@ define([
         var vs;
         var fs;
 
-        var commandList = frameState.commandList;
-
         if (pass.render) {
             var colorList = this._colorCommands;
 
             if (!defined(this._rs)) {
-                this._rs = RenderState.fromCache({
+                this._rs = context.createRenderState({
                     depthTest : {
                         enabled : true
                     },
@@ -833,14 +838,7 @@ define([
                     vs.defines.push('EYE_DISTANCE_TRANSLUCENCY');
                 }
 
-                this._sp = ShaderProgram.replaceCache({
-                    context : context,
-                    shaderProgram : this._sp,
-                    vertexShaderSource : vs,
-                    fragmentShaderSource : PointPrimitiveCollectionFS,
-                    attributeLocations : attributeLocations
-                });
-
+                this._sp = context.replaceShaderProgram(this._sp, vs, PointPrimitiveCollectionFS, attributeLocations);
                 this._compiledShaderScaleByDistance = this._shaderScaleByDistance;
                 this._compiledShaderTranslucencyByDistance = this._shaderTranslucencyByDistance;
             }
@@ -895,14 +893,7 @@ define([
                     sources : [PointPrimitiveCollectionFS]
                 });
 
-                this._spPick = ShaderProgram.replaceCache({
-                    context : context,
-                    shaderProgram : this._spPick,
-                    vertexShaderSource : vs,
-                    fragmentShaderSource : fs,
-                    attributeLocations : attributeLocations
-                });
-
+                this._spPick = context.replaceShaderProgram(this._spPick, vs, fs, attributeLocations);
                 this._compiledShaderScaleByDistancePick = this._shaderScaleByDistance;
                 this._compiledShaderTranslucencyByDistancePick = this._shaderTranslucencyByDistance;
             }

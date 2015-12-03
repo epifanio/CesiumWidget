@@ -3,10 +3,9 @@ define(function() {
     "use strict";
 
     /**
-     * @exports defined
+     * Returns true if the object is defined, returns false otherwise.
      *
-     * @param {Object} value The object.
-     * @returns {Boolean} Returns true if the object is defined, returns false otherwise.
+     * @exports defined
      *
      * @example
      * if (Cesium.defined(positions)) {

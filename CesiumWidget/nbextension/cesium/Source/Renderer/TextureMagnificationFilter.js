@@ -1,18 +1,16 @@
 /*global define*/
 define([
-        '../Core/freezeObject',
-        './WebGLConstants'
+        '../Core/freezeObject'
     ], function(
-        freezeObject,
-        WebGLConstants) {
+        freezeObject) {
     "use strict";
 
     /**
      * @private
      */
     var TextureMagnificationFilter = {
-        NEAREST : WebGLConstants.NEAREST,
-        LINEAR : WebGLConstants.LINEAR,
+        NEAREST : 0x2600,
+        LINEAR : 0x2601,
 
         validate : function(textureMagnificationFilter) {
             return ((textureMagnificationFilter === TextureMagnificationFilter.NEAREST) ||

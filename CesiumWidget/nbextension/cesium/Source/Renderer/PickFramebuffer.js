@@ -5,22 +5,16 @@ define([
         '../Core/defaultValue',
         '../Core/defined',
         '../Core/destroyObject',
-        './Framebuffer',
         './PassState',
-        './Renderbuffer',
-        './RenderbufferFormat',
-        './Texture'
+        './RenderbufferFormat'
     ], function(
         BoundingRectangle,
         Color,
         defaultValue,
         defined,
         destroyObject,
-        Framebuffer,
         PassState,
-        Renderbuffer,
-        RenderbufferFormat,
-        Texture) {
+        RenderbufferFormat) {
     "use strict";
 
     /**
@@ -55,16 +49,13 @@ define([
             this._height = height;
 
             this._fb = this._fb && this._fb.destroy();
-            this._fb = new Framebuffer({
-                context : context,
-                colorTextures : [new Texture({
-                    context : context,
+            this._fb = context.createFramebuffer({
+                colorTextures : [context.createTexture2D({
                     width : width,
                     height : height
                 })],
-                depthStencilRenderbuffer : new Renderbuffer({
-                    context : context,
-                    format : RenderbufferFormat.DEPTH_STENCIL
+                depthRenderbuffer : context.createRenderbuffer({
+                    format : RenderbufferFormat.DEPTH_COMPONENT16
                 })
             });
             this._passState.framebuffer = this._fb;

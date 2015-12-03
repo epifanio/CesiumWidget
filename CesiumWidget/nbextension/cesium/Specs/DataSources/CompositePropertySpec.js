@@ -14,6 +14,7 @@ defineSuite([
         TimeIntervalCollection,
         ConstantProperty) {
     "use strict";
+    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn*/
 
     it('default constructor has expected values', function() {
         var property = new CompositeProperty();

@@ -22,6 +22,7 @@ defineSuite([
         CesiumMath,
         Quaternion) {
     "use strict";
+    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn*/
 
     it('constructor sets expected defaults', function() {
         var property = new SampledProperty(Cartesian3);

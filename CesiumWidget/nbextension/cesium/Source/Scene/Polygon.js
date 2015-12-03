@@ -4,7 +4,6 @@ define([
         '../Core/defaultValue',
         '../Core/defined',
         '../Core/defineProperties',
-        '../Core/deprecationWarning',
         '../Core/destroyObject',
         '../Core/DeveloperError',
         '../Core/Ellipsoid',
@@ -19,7 +18,6 @@ define([
         defaultValue,
         defined,
         defineProperties,
-        deprecationWarning,
         destroyObject,
         DeveloperError,
         Ellipsoid,
@@ -58,11 +56,11 @@ define([
      * @example
      * // Example 1
      * var polygon = new Cesium.Polygon({
-     *   positions : Cesium.Cartesian3.fromDegreesArray([
+     *   positions : Cartesian3.fromDegreesArray([
      *     0.0, 0.0,
      *     10.0, 0.0,
      *     0.0, 10.0
-     *   ])
+     *   ]
      * });
      *
      * @example
@@ -79,13 +77,8 @@ define([
      *     10.0, 0.0,
      *     0.0, 10.0
      * ]);
-     *
-     * @deprecated
-     * @private
      */
     var Polygon = function(options) {
-        deprecationWarning('Polygon', 'Polygon has been deprecated.  Use PolygonGeometry or Entity.polygon instead.');
-
         options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
         /**
@@ -160,7 +153,7 @@ define([
          * polygon.material.uniforms.color = new Cesium.Color(1.0, 1.0, 0.0, 1.0);
          *
          * // 2. Change material to horizontal stripes
-         * polygon.material = Cesium.Material.fromType(Cesium.Material.StripeType);
+         * polygon.material = Cesium.Material.fromType( Material.StripeType);
          */
         this.material = defaultValue(options.material, material);
 
@@ -312,7 +305,7 @@ define([
      * @exception {DeveloperError} this.material must be defined.
      * @exception {DeveloperError} this.granularity must be defined.
      */
-    Polygon.prototype.update = function(frameState) {
+    Polygon.prototype.update = function(context, frameState, commandList) {
         //>>includeStart('debug', pragmas.debug);
         if (!defined(this.ellipsoid)) {
             throw new DeveloperError('this.ellipsoid must be defined.');
@@ -395,7 +388,7 @@ define([
         var primitive = this._primitive;
         primitive.debugShowBoundingVolume = this.debugShowBoundingVolume;
         primitive.appearance.material = this.material;
-        primitive.update(frameState);
+        primitive.update(context, frameState, commandList);
     };
 
     /**

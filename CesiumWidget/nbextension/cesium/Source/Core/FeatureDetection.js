@@ -9,13 +9,6 @@ define([
         Fullscreen) {
     "use strict";
 
-    var theNavigator;
-    if (typeof navigator !== 'undefined') {
-        theNavigator = navigator;
-    } else {
-        theNavigator = {};
-    }
-
     function extractVersion(versionString) {
         var parts = versionString.split('.');
         for (var i = 0, len = parts.length; i < len; ++i) {
@@ -30,7 +23,7 @@ define([
         if (!defined(isChromeResult)) {
             isChromeResult = false;
 
-            var fields = (/ Chrome\/([\.0-9]+)/).exec(theNavigator.userAgent);
+            var fields = (/ Chrome\/([\.0-9]+)/).exec(navigator.userAgent);
             if (fields !== null) {
                 isChromeResult = true;
                 chromeVersionResult = extractVersion(fields[1]);
@@ -51,8 +44,8 @@ define([
             isSafariResult = false;
 
             // Chrome contains Safari in the user agent too
-            if (!isChrome() && (/ Safari\/[\.0-9]+/).test(theNavigator.userAgent)) {
-                var fields = (/ Version\/([\.0-9]+)/).exec(theNavigator.userAgent);
+            if (!isChrome() && (/ Safari\/[\.0-9]+/).test(navigator.userAgent)) {
+                var fields = (/ Version\/([\.0-9]+)/).exec(navigator.userAgent);
                 if (fields !== null) {
                     isSafariResult = true;
                     safariVersionResult = extractVersion(fields[1]);
@@ -73,7 +66,7 @@ define([
         if (!defined(isWebkitResult)) {
             isWebkitResult = false;
 
-            var fields = (/ AppleWebKit\/([\.0-9]+)(\+?)/).exec(theNavigator.userAgent);
+            var fields = (/ AppleWebKit\/([\.0-9]+)(\+?)/).exec(navigator.userAgent);
             if (fields !== null) {
                 isWebkitResult = true;
                 webkitVersionResult = extractVersion(fields[1]);
@@ -95,14 +88,14 @@ define([
             isInternetExplorerResult = false;
 
             var fields;
-            if (theNavigator.appName === 'Microsoft Internet Explorer') {
-                fields = /MSIE ([0-9]{1,}[\.0-9]{0,})/.exec(theNavigator.userAgent);
+            if (navigator.appName === 'Microsoft Internet Explorer') {
+                fields = /MSIE ([0-9]{1,}[\.0-9]{0,})/.exec(navigator.userAgent);
                 if (fields !== null) {
                     isInternetExplorerResult = true;
                     internetExplorerVersionResult = extractVersion(fields[1]);
                 }
-            } else if (theNavigator.appName === 'Netscape') {
-                fields = /Trident\/.*rv:([0-9]{1,}[\.0-9]{0,})/.exec(theNavigator.userAgent);
+            } else if (navigator.appName === 'Netscape') {
+                fields = /Trident\/.*rv:([0-9]{1,}[\.0-9]{0,})/.exec(navigator.userAgent);
                 if (fields !== null) {
                     isInternetExplorerResult = true;
                     internetExplorerVersionResult = extractVersion(fields[1]);
@@ -122,7 +115,7 @@ define([
         if (!defined(isFirefoxResult)) {
             isFirefoxResult = false;
 
-            var fields = /Firefox\/([\.0-9]+)/.exec(theNavigator.userAgent);
+            var fields = /Firefox\/([\.0-9]+)/.exec(navigator.userAgent);
             if (fields !== null) {
                 isFirefoxResult = true;
                 firefoxVersionResult = extractVersion(fields[1]);
@@ -134,7 +127,7 @@ define([
     var isWindowsResult;
     function isWindows() {
         if (!defined(isWindowsResult)) {
-            isWindowsResult = /Windows/i.test(theNavigator.appVersion);
+            isWindowsResult = /Windows/i.test(navigator.appVersion);
         }
         return isWindowsResult;
     }
@@ -147,11 +140,11 @@ define([
     var hasPointerEvents;
     function supportsPointerEvents() {
         if (!defined(hasPointerEvents)) {
-            //While navigator.pointerEnabled is deprecated in the W3C specification
+            //While window.navigator.pointerEnabled is deprecated in the W3C specification
             //we still need to use it if it exists in order to support browsers
             //that rely on it, such as the Windows WebBrowser control which defines
-            //PointerEvent but sets navigator.pointerEnabled to false.
-            hasPointerEvents = typeof PointerEvent !== 'undefined' && (!defined(theNavigator.pointerEnabled) || theNavigator.pointerEnabled);
+            //window.PointerEvent but sets window.navigator.pointerEnabled to false.
+            hasPointerEvents = defined(window.PointerEvent) && (!defined(window.navigator.pointerEnabled) || window.navigator.pointerEnabled);
         }
         return hasPointerEvents;
     }
@@ -175,14 +168,14 @@ define([
         isFirefox : isFirefox,
         firefoxVersion : firefoxVersion,
         isWindows : isWindows,
-        hardwareConcurrency : defaultValue(theNavigator.hardwareConcurrency, 3),
+        hardwareConcurrency : defaultValue(navigator.hardwareConcurrency, 3),
         supportsPointerEvents : supportsPointerEvents
     };
 
     /**
      * Detects whether the current browser supports the full screen standard.
      *
-     * @returns {Boolean} true if the browser supports the full screen standard, false if not.
+     * @returns true if the browser supports the full screen standard, false if not.
      *
      * @see Fullscreen
      * @see {@link http://dvcs.w3.org/hg/fullscreen/raw-file/tip/Overview.html|W3C Fullscreen Living Specification}
@@ -194,7 +187,7 @@ define([
     /**
      * Detects whether the current browser supports typed arrays.
      *
-     * @returns {Boolean} true if the browser supports typed arrays, false if not.
+     * @returns true if the browser supports typed arrays, false if not.
      *
      * @see {@link http://www.khronos.org/registry/typedarray/specs/latest/|Typed Array Specification}
      */
@@ -205,7 +198,7 @@ define([
     /**
      * Detects whether the current browser supports Web Workers.
      *
-     * @returns {Boolean} true if the browsers supports Web Workers, false if not.
+     * @returns true if the browsers supports Web Workers, false if not.
      *
      * @see {@link http://www.w3.org/TR/workers/}
      */

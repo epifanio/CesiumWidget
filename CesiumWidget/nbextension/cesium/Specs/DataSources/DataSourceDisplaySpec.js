@@ -20,6 +20,7 @@ defineSuite([
         createScene,
         MockDataSource) {
     "use strict";
+    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn*/
 
     var dataSourceCollection;
     var scene;
@@ -205,6 +206,7 @@ defineSuite([
             dataSourceCollection : dataSourceCollection,
             scene : scene
         });
+        var entity = new Entity();
         var result = new BoundingSphere();
         expect(function() {
             display.getBoundingSphere(undefined, false, result);

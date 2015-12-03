@@ -1,10 +1,8 @@
 /*global define*/
 define([
-        './defaultValue',
         './defined',
         './DeveloperError'
     ], function(
-        defaultValue,
         defined,
         DeveloperError) {
     "use strict";
@@ -13,28 +11,22 @@ define([
     /**
      * @private
      */
-    var getStringFromTypedArray = function(uint8Array, byteOffset, byteLength) {
+    var getStringFromTypedArray = function(buffer, byteOffset, length) {
         //>>includeStart('debug', pragmas.debug);
-        if (!defined(uint8Array)) {
-            throw new DeveloperError('uint8Array is required.');
+        if (!defined(buffer)) {
+            throw new DeveloperError('buffer is required.');
         }
-        if (byteOffset < 0) {
-            throw new DeveloperError('byteOffset cannot be negative.');
+
+        if (!defined(byteOffset)) {
+            throw new DeveloperError('byteOffset is required.');
         }
-        if (byteLength < 0) {
-            throw new DeveloperError('byteLength cannot be negative.');
-        }
-        if ((byteOffset + byteLength) > uint8Array.byteLength) {
-            throw new DeveloperError('sub-region exceeds array bounds.');
+
+        if (!defined(length)) {
+            throw new DeveloperError('length is required.');
         }
         //>>includeEnd('debug');
 
-        byteOffset = defaultValue(byteOffset, 0);
-        byteLength = defaultValue(byteLength, uint8Array.byteLength - byteOffset);
-
-        uint8Array = uint8Array.subarray(byteOffset, byteOffset + byteLength);
-
-        return getStringFromTypedArray.decode(uint8Array);
+        return getStringFromTypedArray.decode(new Uint8Array(buffer, byteOffset, length));
     };
 
     // Exposed functions for testing
@@ -52,7 +44,7 @@ define([
         // fromCharCode will not handle all legal Unicode values (up to 21 bits).  See
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCharCode
         for (var i = 0; i < length; ++i) {
-            result += String.fromCharCode(view[i]);
+          result += String.fromCharCode(view[i]);
         }
         return result;
     };

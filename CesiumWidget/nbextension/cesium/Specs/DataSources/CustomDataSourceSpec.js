@@ -10,6 +10,7 @@ defineSuite([
         DataSourceClock,
         EntityCollection) {
     "use strict";
+    /*global jasmine,it,expect*/
 
     it('constructor has expected defaults', function() {
         var dataSource = new CustomDataSource();
@@ -62,11 +63,4 @@ defineSuite([
         expect(spy.calls.count()).toEqual(2);
         expect(spy).toHaveBeenCalledWith(dataSource, false);
     });
-
-    it('has entity collection with link to data source', function() {
-        var dataSource = new CustomDataSource();
-        var entityCollection = dataSource.entities;
-        expect(entityCollection.owner).toEqual(dataSource);
-    });
-
 });
