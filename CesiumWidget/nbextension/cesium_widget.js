@@ -7,23 +7,6 @@
  * @license Apache
  */
 
-//var cesium_root = IPython.notebook.base_url + 'nbextensions/CesiumWidget/cesium/Source';
-//var cesium_path = cesium_root + '/Cesium';
-
-//require.config({
-//    baseUrl: cesium_root,
-//    urlArgs: "",
-//    waitSeconds: 60,
-//    paths: {
-//        cesium: cesium_path
-//    },
-//    shim: {
-//        cesium: {
-//            exports: 'cesium'
-//        },
-//    }
-//});
-
 require.config({
     map: {
         "*": {
@@ -236,10 +219,12 @@ define(
 				if (!$.isEmptyObject(zoomto)) {
 					var pos = zoomto; //.split(",");
 					this.viewer.camera.setView({
-					        position : Cesium.Cartesian3.fromDegrees(Number(pos[0]), Number(pos[1]), Number(pos[2])),
-					        heading : Cesium.Math.toRadians(Number(pos[3])),
-					        pitch : Cesium.Math.toRadians(Number(pos[4])),
-					        roll : Cesium.Math.toRadians(Number(pos[5]))
+					        destination : Cesium.Cartesian3.fromDegrees(Number(pos[0]), Number(pos[1]), Number(pos[2])),
+					        orientation : {
+					            heading : Cesium.Math.toRadians(Number(pos[3])),
+					            pitch : Cesium.Math.toRadians(Number(pos[4])),
+					            roll : Cesium.Math.toRadians(Number(pos[5]))
+					        }
 					    });
 					    //this.model.set('_zoomto', null);
 					    this.touch()
