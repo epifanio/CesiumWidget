@@ -16,6 +16,7 @@ A Cesiumjs widget for the Ipython notebook, forked from https://github.com/petru
 
 .. _CesiumWidget: https://github.com/epifanio/CesiumWidget
 .. _Cesiumjs: http://cesiumjs.org/
+
 """
 
 try:
@@ -98,7 +99,8 @@ setup_args = {
     'install_requires': ['ipywidgets', 'czml'],
     'packages': find_packages(),
     'zip_safe': False,
-    'author': 'Massimo Di Stefano',
+    'author': 'Petrus Hyvonen <petrus.hyvonen@gmail.com>, Massimo Di Stefano <epiesasha@me.com>',
+    'author_email': 'petrus.hyvonen@gmail.com, epiesasha@me.com',
     'url': 'https://github.com/epifanio/CesiumWidget',
     'keywords': [
         'ipython',

@@ -32,7 +32,7 @@ Roadmap still to be written but visioned features are:
 
 Screenshot
 ----------
-![Screenshot](screenshot.jpg)
+![Screenshot](screenshot.png)
 
-[video demo](http://epinux.com/cesiumwidget.mp4)
+[video demo](http://epinux.com/cesium-480p)
 
