@@ -34,5 +34,5 @@ Screenshot
 ----------
 ![Screenshot](screenshot.png)
 
-[video demo](http://epinux.com/cesium-480p.mp4)
+[video demo](http://epinux.com/cesium-720p.mp4)
 
