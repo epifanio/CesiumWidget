@@ -1,23 +1,5 @@
 FROM andrewosh/binder-base
 
-MAINTAINER Massimo Di Stefano <epiesasha@me.com>
-
-USER main
-
-RUN /home/main/anaconda/envs/python3/bin/pip install --upgrade pip
-#RUN /home/main/anaconda/envs/python3/bin/pip install -U jupyter
-RUN /home/main/anaconda/envs/python3/bin/pip install czml
-RUN /home/main/anaconda/envs/python3/bin/pip install geocoder
-
-RUN conda install \
-    ipywidgets \
-    numpy \
-  && pip install \
-    czml \
-    geocoder
-RUN /home/main/anaconda/envs/python3/bin/pip install ipywidgets
-#RUN /home/main/anaconda/bin/pip install ipywidgets
-
 USER root
 
 RUN echo "root:root" | chpasswd
@@ -26,7 +8,23 @@ RUN echo "main:main" | chpasswd
 
 USER main
 
-RUN git clone https://github.com/epifanio/CesiumWidget --depth=1
+# install demo support
+RUN conda install \
+    ipywidgets \
+    numpy \
+  && pip install \
+    czml \
+    geocoder
+
+RUN /home/main/anaconda/envs/python3/bin/pip install --upgrade pip
+RUN /home/main/anaconda/envs/python3/bin/pip install \
+    czml \
+    geocoder \
+    ipywidgets
+
+
+#RUN git clone https://github.com/petrushy/CesiumWidget.git --depth=1
+RUN git clone  https://github.com/OSGeo-live/CesiumWidget --depth=1
 
 
 WORKDIR CesiumWidget
@@ -34,6 +32,8 @@ WORKDIR CesiumWidget
 RUN python setup.py install
 RUN /home/main/anaconda/envs/python3/bin/python setup.py install
 
-RUN jupyter nbextension install CesiumWidget --user --quiet
+# jupyter-pip so crazy. this is cheating, as a real user wouldn't have
+# the source checked out...
+RUN jupyter nbextension install CesiumWidget/static/CesiumWidget --user --quiet
 
-WORKDIR $HOME/Examples
+RUN !cp /home/main/.local/share/jupyter/nbextensions/CesiumWidget/cesium/Apps/SampleData/kml/gdpPerCapita2008.kmz /home/main/notebooks/Examples/
