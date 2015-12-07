@@ -36,4 +36,4 @@ RUN /home/main/anaconda/envs/python3/bin/python setup.py install
 # the source checked out...
 RUN jupyter nbextension install CesiumWidget/static/CesiumWidget --user --quiet
 
-RUN !cp /home/main/.local/share/jupyter/nbextensions/CesiumWidget/cesium/Apps/SampleData/kml/gdpPerCapita2008.kmz /home/main/notebooks/Examples/
+RUN cp /home/main/.local/share/jupyter/nbextensions/CesiumWidget/cesium/Apps/SampleData/kml/gdpPerCapita2008.kmz /home/main/notebooks/Examples/
