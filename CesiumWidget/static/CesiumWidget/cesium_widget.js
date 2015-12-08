@@ -216,7 +216,7 @@ define(
             },
 
             zoom_to: function () {
-            	console.log('zoom to a location!');
+            	console.log('zoom to a location on the globe!');
 				// move the camera to a location
 				var zoomto = this.model.get('_zoomto');
 				if (!$.isEmptyObject(zoomto)) {
